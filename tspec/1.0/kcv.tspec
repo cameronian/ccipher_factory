@@ -1,0 +1,11 @@
+
+
+spec :kcv do
+  field :oid, :oid, Tag.value(:kcv)
+  field :version, :int, 0x0100
+
+  field :mode,        :int
+  field :iv,          :bin
+  field :nonce,       :bin
+  field :check_value, :bin
+end

@@ -1,0 +1,6 @@
+
+
+spec :compression_none do
+  field :oid, :oid, Tag.value(:compression_none)
+  field :version, :int, 0x0100
+end

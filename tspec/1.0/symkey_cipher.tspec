@@ -1,0 +1,11 @@
+
+
+spec :symkey_cipher do
+  field :oid, :oid, Tag.value(:symkey_cipher)
+  field :version, :int, 0x0100
+
+  field :mode, :int
+  field :iv, :bin
+  field :compression, :bin
+  field :aad, :bin  # additional authenticated data (gcm mode)
+end

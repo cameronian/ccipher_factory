@@ -1,0 +1,59 @@
+GIT
+  remote: ccrypto
+  revision: beace29ef4e6eb76d77fcd90aea0f15bc5238e9f
+  branch: master
+  specs:
+    ccrypto (0.1.0)
+      tlogger
+      toolrack
+
+GIT
+  remote: ccrypto-java
+  revision: 8ef5f5b554ab3ae089e55035d5deb8d379c352a9
+  branch: master
+  specs:
+    ccrypto-java (0.1.0)
+
+PATH
+  remote: .
+  specs:
+    ccipher_factory (0.1.0)
+      tlogger
+      toolrack
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    base58 (0.2.3)
+    diff-lcs (1.5.0)
+    rake (13.0.6)
+    rspec (3.11.0)
+      rspec-core (~> 3.11.0)
+      rspec-expectations (~> 3.11.0)
+      rspec-mocks (~> 3.11.0)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-mocks (3.11.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-support (3.11.0)
+    tlogger (0.26.3)
+    toolrack (0.18.3)
+      base58
+      tlogger
+
+PLATFORMS
+  universal-java-11
+
+DEPENDENCIES
+  ccipher_factory!
+  ccrypto!
+  ccrypto-java!
+  rake (~> 13.0)
+  rspec (~> 3.0)
+
+BUNDLED WITH
+   2.3.6

@@ -1,0 +1,9 @@
+
+
+spec :digest do
+  field :oid, :oid, Tag.value(:digest)
+  field :version, :int, 0x0100
+
+  field :digest_algo, :int
+  field :salt, :bin
+end

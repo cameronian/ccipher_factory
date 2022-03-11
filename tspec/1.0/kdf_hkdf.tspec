@@ -1,0 +1,10 @@
+
+
+spec :kdf_hkdf do
+  field :oid,   :oid, Tag.value(:kdf_hkdf)
+  field :version, :int, 0x0100
+
+  field :digest, :int
+  field :outByteLength, :int
+  field :salt,  :bin
+end

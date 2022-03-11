@@ -1,0 +1,9 @@
+
+
+spec :ecc_att_sign do
+  field :oid, :oid, Tag.value(:ecc_att_sign)
+  field :version, :int, 0x0100
+
+  field :ecc_signature,   :bin
+  field :compression,     :bin
+end
