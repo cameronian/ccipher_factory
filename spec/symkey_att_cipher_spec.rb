@@ -20,7 +20,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     sk.attach_mode
     skBin = sk.to_asn1
 
-    expect(encBuf.string.length > 0).to be true
+    expect(encBuf.bytes.length > 0).to be true
 
     rsk = CcipherFactory::SoftSymKey.from_asn1(skBin)
     dc = subject.att_decryptor
@@ -28,10 +28,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dc.output(decBuf)
     dc.key = rsk
     dc.att_decrypt_init
-    dc.att_decrypt_update(encBuf.string)
+    dc.att_decrypt_update(encBuf.bytes)
     dc.att_decrypt_final
 
-    expect(decBuf.string == data).to be true
+    expect(decBuf.equals?(data)).to be true
 
   end
 
@@ -53,10 +53,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     sk.attach_mode
     skBin = sk.to_asn1
 
-    expect(encBuf.string.length > 0).to be true
+    expect(encBuf.bytes.length > 0).to be true
 
     File.open("att_enc.bin","wb") do |f|
-      f.write encBuf.string
+      f.write encBuf.bytes
     end
 
     rsk = CcipherFactory::SoftSymKey.from_asn1(skBin)
@@ -65,10 +65,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dc.output(decBuf)
     dc.key = rsk
     dc.att_decrypt_init
-    dc.att_decrypt_update(encBuf.string)
+    dc.att_decrypt_update(encBuf.bytes)
     dc.att_decrypt_final
 
-    expect(decBuf.string == data).to be true
+    expect(decBuf.equals?(data)).to be true
 
   end
 
@@ -93,7 +93,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     skBin = sk.to_asn1
 
-    expect(encBuf.string.length > 0).to be true
+    expect(encBuf.bytes.length > 0).to be true
 
     rsk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
       case ops
@@ -106,10 +106,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dc.output(decBuf)
     dc.key = rsk
     dc.att_decrypt_init
-    dc.att_decrypt_update(encBuf.string)
+    dc.att_decrypt_update(encBuf.bytes)
     dc.att_decrypt_final
 
-    expect(decBuf.string == data).to be true
+    expect(decBuf.equals?(data)).to be true
 
     expect {
 
@@ -124,7 +124,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
       dc.output(decBuf)
       dc.key = wrsk
       dc.att_decrypt_init
-      dc.att_decrypt_update(encBuf.string)
+      dc.att_decrypt_update(encBuf.bytes)
       dc.att_decrypt_final
 
     }.to raise_exception(CcipherFactory::SymKeyDecryptionError)
@@ -170,7 +170,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     skBin = sk.to_asn1
 
-    expect(encBuf.string.length > 0).to be true
+    expect(encBuf.bytes.length > 0).to be true
 
     rsk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
       case ops
@@ -183,10 +183,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dc.output(decBuf)
     dc.key = rsk
     dc.att_decrypt_init
-    dc.att_decrypt_update(encBuf.string)
+    dc.att_decrypt_update(encBuf.bytes)
     dc.att_decrypt_final
 
-    expect(decBuf.string == data).to be true
+    expect(decBuf.equals?(data)).to be true
 
     expect {
       # compression error shall throw first before end of process
@@ -201,10 +201,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
       dc.output(decBuf)
       dc.key = wrsk
       dc.att_decrypt_init
-      dc.att_decrypt_update(encBuf.string)
+      dc.att_decrypt_update(encBuf.bytes)
       dc.att_decrypt_final
 
-      expect(decBuf.string != data).to be true
+      expect(decBuf.equals?(data)).to be false
 
     }.to raise_exception(CcipherFactory::SymKeyDecryptionError)
 

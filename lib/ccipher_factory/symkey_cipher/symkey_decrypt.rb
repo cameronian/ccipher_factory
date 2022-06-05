@@ -7,6 +7,7 @@ module CcipherFactory
       include TR::CondUtils
       include Common
       include Encoding::ASN1Decoder
+      include Compression::CompressionHelper
 
       #class SymKeyDecryptError < StandardError; end
 
@@ -38,7 +39,6 @@ module CcipherFactory
 
             ts = Encoding::ASN1Decoder.from_asn1(meta)
             @mode = Tag.constant_key(ts.value(:mode))
-            logger.debug "Decoded mode : #{@mode}"
             iv = ts.value(:iv)
             comp = ts.value(:compression)
 
@@ -48,12 +48,15 @@ module CcipherFactory
               @decompressor.decompress
               @decompressor.decompress_init
               @decompressor.decompress_update_meta(comp)
+
+              compression_on
               logger.tdebug :symkey_dec, "Compression is active"
             else
+              compression_off
               logger.tdebug :symkey_dec, "Compression is NOT active"
             end
 
-            aad = ts.value(:aad)
+            authTag = ts.value(:auth_tag)
 
             algoDef = SymKeyCipher.algo_default(@key.keytype)
 
@@ -61,10 +64,8 @@ module CcipherFactory
             cconf.cipherOps = :decrypt
             cconf.key = @key.key
             cconf.iv = iv if not_empty?(iv)
-            cconf.auth_tag = aad if cconf.respond_to?(:auth_tag=)
+            cconf.auth_tag = authTag if cconf.respond_to?(:auth_tag=)
             @cipher = Ccrypto::AlgoFactory.engine(cconf)
-
-            logger.debug "Decrypt config : #{cconf}"
 
             #spec = SymKeyCipher.key_to_spec(@key, @mode)
             #logger.tdebug :symkey_dec, "Decrypt cipher spec : #{spec}"
@@ -87,20 +88,34 @@ module CcipherFactory
       def decrypt_update_cipher(val)
 
         raise SymKeyCipherError, "Please call update_meta() first before update_cipher()" if @cipher.nil?
+        
+        logger.debug "Given cipher data : #{val.length}"
 
         dec = @cipher.update(val)
 
-        if @decompressor.nil?
-          dc = dec
-        else
-          begin
-            dc = @decompressor.decompress_update(dec)
-          rescue Zlib::Error => ex
-            raise SymKeyDecryptionError, "Data decompression failed: #{ex.message}"
-          end
-        end
 
-        write_to_output(dc)
+        if not_empty?(dec) and dec.length > 0
+
+          logger.debug "After cipher before compression check : #{dec.length}"
+          res = decompress_data_if_active(dec)
+          write_to_output(res)
+
+          #if @decompressor.nil?
+          #  dc = dec
+          #else
+          #  begin
+          #    dc = @decompressor.decompress_update(dec)
+          #  rescue Zlib::Error => ex
+          #    raise SymKeyDecryptionError, "Data decompression failed: #{ex.message}"
+          #  end
+          #end
+
+          #write_to_output(dc)
+
+        else
+
+          logger.debug "Cipher update returns nothing"
+        end
 
       end
 
@@ -108,12 +123,16 @@ module CcipherFactory
 
         begin
           dec = @cipher.final 
-          write_to_output(dec)
+          logger.debug "Final length : #{dec.length}"
+          res = decompress_data_if_active(dec)
+          write_to_output(res)
         rescue Ccrypto::CipherEngineException => ex
           raise SymKeyDecryptionError, ex
         end
 
         @cipher = nil
+
+        @key = nil
         # this is to clear up the cipher object from memory 
         # including key and IV value
         # Tested with aes-finder utility on ruby 3.0.2

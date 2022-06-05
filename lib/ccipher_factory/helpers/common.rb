@@ -14,7 +14,7 @@ module CcipherFactory
     end
 
     def write_to_output(val)
-      @output.write(val) if not @output.nil?
+      @output.write(val) if not @output.nil? and not_empty?(val)
     end
 
     def is_output_given?
@@ -28,11 +28,24 @@ module CcipherFactory
       @intOutputBuf
     end
 
+    def cleanup_intOutputBuf
+      if not @intOutputBuf.nil?
+        @intOutputBuf = nil
+      end
+    end
+
     def intOutputFile
       if @intOutputFile.nil?
         @intOutputFile = Tempfile.new
       end
       @intOutputFile
+    end
+
+    def cleanup_intOutputFile
+      if not @intOutputFile.nil?
+        @intOutputFile.close!
+        @intOutputFile = nil
+      end
     end
 
     def disposeOutput(obj)

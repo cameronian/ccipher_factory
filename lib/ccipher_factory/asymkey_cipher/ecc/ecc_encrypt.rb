@@ -24,10 +24,11 @@ module CcipherFactory
 
         raise ECCCipherError, "Receipient public key is required" if is_empty?(recpPub)
         raise ECCCipherError, "Cipher requires output to be set" if not is_output_given?  
+        raise ECCCipherError, "Sender Keypair is required" if is_empty?(@sender_keypair)
 
-        if is_empty?(@sender_keypair)
-          @sender_keypair = AsymKeyGenerator.generate(:ecc) 
-        end
+        #if is_empty?(@sender_keypair)
+        #  @sender_keypair = AsymKeyGenerator.generate(:ecc) 
+        #end
 
         #derived = @sender_keypair.dh_compute_key(recpPub)
         #logger.debug "sender : #{@sender_keypair.inspect} / #{@sender_keypair.private?}"
@@ -46,12 +47,14 @@ module CcipherFactory
         @cipher.key = @sessKey
 
         if is_compression_on?
+          logger.debug "Turning on compression"
           @cipher.compression_on
         else
+          logger.debug "Compression not active"
           @cipher.compression_off
         end
 
-        @cipher.encrypt_init #(@sessKey)
+        @cipher.encrypt_init 
 
         if block
           instance_eval(&block)
@@ -74,8 +77,9 @@ module CcipherFactory
         while not intOutputFile.eof?
           write_to_output(intOutputFile.read)
         end
-        intOutputFile.close!
+        cleanup_intOutputFile
 
+        pkBin = @sender_keypair.public_key.to_bin
         ts = Encoding::ASN1Encoder.instance(:ecc_cipher)
         ts.set(:sender_public, @sender_keypair.public_key.to_bin)
         ts.set(:cipher_config, cipherConfig)

@@ -21,11 +21,11 @@ RSpec.describe CcipherFactory::AsymKeySigner do
     ver = subject.att_verifier
     ver.output(vout)
     ver.att_verify_init
-    ver.att_verify_update(out.string)
+    ver.att_verify_update(out.bytes)
     res = ver.att_verify_final
 
     expect(res).to be true
-    expect(vout.string == data).to be true
+    expect(vout.equals?(data)).to be true
     #expect(ver.embedded_signer.to_der == ask.public_key.public_key.to_der).to be true
 
   end
@@ -50,11 +50,11 @@ RSpec.describe CcipherFactory::AsymKeySigner do
     ver = subject.att_verifier
     ver.output(vout)
     ver.att_verify_init
-    ver.att_verify_update(out.string)
+    ver.att_verify_update(out.bytes)
     res = ver.att_verify_final
 
     expect(res).to be true
-    expect(vout.string == data).to be true
+    expect(vout.equals?(data)).to be true
     #expect(ver.embedded_signer.to_der == ask.public_key.public_key.to_der).to be true
 
   end

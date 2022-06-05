@@ -37,7 +37,9 @@ module CcipherFactory
   # Your code goes here...
   class SymKeyCipherError < StandardError; end
   class SymKeyDecryptionError < StandardError; end
+
 end
 
-MemBuf = CcipherFactory::MemoryBuffer
+MemBuf = Ccrypto::UtilFactory.instance(:membuf)
+#MemBuf = CcipherFactory::MemoryBuffer
 

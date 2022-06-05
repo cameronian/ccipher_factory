@@ -16,7 +16,9 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
     rkey = CcipherFactory::SoftSymKey.new(:aes, 256)
     rkey.merge_key([shares[1]])
 
-    expect(sk.key == rkey.key).to be true
+    p sk.key.to_bin
+    p rkey.key
+    expect(sk.key.to_bin == rkey.key).to be true
 
     totalShare = 5
     reqShare = 3
@@ -29,7 +31,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
     cnt = 0
     while (cnt < 20) do
       rk2.merge_key(shares.sample(reqShare))
-      expect(rk2.key == sk.key).to be true
+      expect(rk2.key == sk.key.to_bin).to be true
       cnt += 1
     end
 

@@ -63,7 +63,7 @@ module CcipherFactory
 
         scrypt = Ccrypto::AlgoFactory.engine(sconf)
 
-        @derivedVal = scrypt.derive(intOutputBuf.string)
+        @derivedVal = scrypt.derive(intOutputBuf.bytes)
 
         #@derivedVal = OpenSSL::KDF.scrypt(intOutputBuf.string, salt: @salt, N: @cost, r: @blocksize, p: @parallel, length: @outByteLength)
 

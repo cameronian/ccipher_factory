@@ -23,7 +23,14 @@ module CcipherFactory
     def self.generate(keytype, keysize, *args, &block)
       raise SymKeyGeneratorError, "Unsupported symmetric key algo '#{keytype}'. Supported symmetric keys are: #{supported_symkey.keys.join(", ")}" if not supported_symkey.keys.include?(keytype)
 
-      SoftSymKey.new(keytype, keysize, SecureRandom.random_bytes(keysize/8))
+      kc = Ccrypto::KeyConfig.new
+      kc.algo = keytype
+      kc.keysize = keysize
+      ke = Ccrypto::AlgoFactory.engine(Ccrypto::KeyConfig)
+      sk = ke.generate(kc)
+
+      #SoftSymKey.new(keytype, keysize, SecureRandom.random_bytes(keysize/8))
+      SoftSymKey.new(keytype, keysize, sk)
     end
 
     def self.derive(keytype, keysize, *args, &block)
@@ -40,6 +47,14 @@ module CcipherFactory
       dsk = DerivedSymKey.new(keytype, keysize) 
       dsk.derive(pass, kdf)
       dsk
+    end
+
+    def self.logger
+      if @logger.nil?
+        @logger = Tlogger.new
+        @logger.tag = :symkey_gen
+      end
+      @logger
     end
 
   end

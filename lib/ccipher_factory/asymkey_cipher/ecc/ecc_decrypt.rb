@@ -41,6 +41,7 @@ module CcipherFactory
         sender = Ccrypto::AlgoFactory.engine(Ccrypto::ECCPublicKey).to_key(senderPub)
         #derived = @decryption_key.dh_compute_key(sender.public_key)
         derived = @decryption_key.derive_dh_shared_secret(sender)
+        #derived = @decryption_key.derive_dh_shared_secret(@decryption_key.public_key)
 
         sessKey = DerivedSymKey.from_asn1(keyConf) do |ops|
           case ops
@@ -67,6 +68,14 @@ module CcipherFactory
 
         @cipher.decrypt_final
 
+      end
+
+      def logger
+        if @logger.nil?
+          @logger = Tlogger.new
+          @logger.tag = :ecc_dec
+        end
+        @logger
       end
 
     end

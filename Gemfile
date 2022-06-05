@@ -9,15 +9,17 @@ gem "rake", "~> 13.0"
 
 gem "rspec", "~> 3.0"
 
-gem 'ccrypto',  git: 'ccrypto', branch: 'master'
+gem 'ccrypto',  git: 'ccrypto', branch: 'main'
 
 require 'toolrack'
 if defined?(TR::RTUtils)
   if TR::RTUtils.on_jruby?
-    gem 'ccrypto-java', git: 'ccrypto-java', branch: 'master'
+    gem 'ccrypto-java', git: 'ccrypto-java', branch: 'main'
   else
-    gem 'ccrypto-ruby', git: 'ccrypto-ruby', branch: 'master'
+    gem 'ccrypto-ruby', git: 'ccrypto-ruby', branch: 'main'
   end
 end
+
+gem 'toolrack', git: "toolrack", branch: "master"
 
 

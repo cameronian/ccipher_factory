@@ -34,7 +34,7 @@ module CcipherFactory
     def is_matched?
       logger.tdebug :kcv_match, "Check if KCV matched"
       to_asn1
-      res = intOutputBuf.string
+      res = intOutputBuf.bytes
       @check_value == res
     end
 
@@ -62,7 +62,7 @@ module CcipherFactory
       ts.set(:mode, Tag.constant(@mode))
       ts.set(:iv, @iv)
       ts.set(:nonce, @nonce)
-      ts.set(:check_value, intOutputBuf.string)
+      ts.set(:check_value, intOutputBuf.bytes)
 
       #logger.debug "Key : #{self.class.converter.to_hex(@key.key)}"
       #logger.debug "mode #{@mode}"

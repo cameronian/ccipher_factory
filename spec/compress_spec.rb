@@ -25,10 +25,11 @@ RSpec.describe CcipherFactory::Compression::Compressor do
         dig.digest_update data
       end
     end
-    expect(out.string.length > 0).to be true
-    puts "Compressed length : #{out.string.length}"
+    expect(out.length > 0).to be true
+    puts "Compressed length : #{out.length}"
     puts "Orignal length : #{File.size(source)}"
-    expect(out.string.length < File.size(source)).to be true
+    expect(out.length < File.size(source)).to be true
+    expect(res.length > 0).to be true
 
     digMeta = dig.digest_final
 
@@ -43,12 +44,12 @@ RSpec.describe CcipherFactory::Compression::Compressor do
     c.output(dout)
     c.decompress_init do
       decompress_update_meta(res)
-      decompress_update(out.string)
+      decompress_update(out.bytes)
     end
-    puts "Inflated size : #{dout.string.length}"
-    dig2.digest_update(dout.string)
+    puts "Inflated size : #{dout.length}"
+    dig2.digest_update(dout)
     digRes = dig2.digest_final
-    expect(digOut2.string == digOut.string).to be true
+    expect(digOut2.bytes == digOut.bytes).to be true
 
   end
 

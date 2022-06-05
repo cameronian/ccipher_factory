@@ -51,7 +51,7 @@ module CcipherFactory
         begin
 
           #len = find_asn1_length(buf.string)
-          len = Ccrypto::ASN1.engine.asn1_length(buf.string)
+          len = Ccrypto::ASN1.engine.asn1_length(buf.bytes)
           #logger.debug "Found meta length : #{len}" if not logger.nil?
           raise InsufficientData if len == 0
 

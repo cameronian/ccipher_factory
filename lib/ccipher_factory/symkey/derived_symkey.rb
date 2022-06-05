@@ -42,6 +42,13 @@ module CcipherFactory
 
     end
 
+    def self.logger
+      if @logger.nil?
+        @logger = Tlogger.new
+        @logger.tag = :derived_symkey
+      end
+      @logger
+    end
 
     attr_accessor :kdf
     def activate_password_verifier
@@ -63,6 +70,8 @@ module CcipherFactory
 
       @key = @kdf.derivedVal
 
+      #logger.debug "Derived : #{@key}"
+
     end
 
     def to_asn1
@@ -79,6 +88,10 @@ module CcipherFactory
         ts.set(:kcv, "")
       end
       ts.to_asn1
+    end
+
+    def logger
+      self.class.logger
     end
 
   end

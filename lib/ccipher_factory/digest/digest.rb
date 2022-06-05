@@ -31,10 +31,19 @@ module CcipherFactory
       else
 
         algo = Tag.constant_key(ts.value(:digest_algo))
+        logger.debug "from_asn1 algo : #{algo}"
         dig = instance
         dig.salt = ts.value(:salt)
         dig.digest_init(algo, &block)
       end
+    end
+
+    def self.logger
+      if @logger.nil?
+        @logger = Tlogger.new
+        @logger.tag = :ccfact_digest
+      end
+      @logger
     end
 
     ## 
@@ -46,6 +55,8 @@ module CcipherFactory
       @algo = args.first
       @algo = SupportedDigest.instance.default_digest if is_empty?(@algo)
       raise DigestError, "Given digest '#{@algo}' is not supported.\nPossible digest algo including: #{SupportedDigest.instance.supported.join(", ")}" if not SupportedDigest.instance.is_supported?(@algo)
+
+      logger.debug "Digest algo in init : #{@algo}"
 
       @digest = Ccrypto::AlgoFactory.engine(Ccrypto::DigestConfig).digest(@algo)
 
@@ -135,11 +146,7 @@ module CcipherFactory
 
     private
     def logger
-      if @logger.nil?
-        @logger = Tlogger.new
-        @logger.tag = :ccfact_digest
-      end
-      @logger
+      Digest.logger
     end
 
   end

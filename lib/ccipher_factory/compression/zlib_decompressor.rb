@@ -26,7 +26,7 @@ module CcipherFactory
               ts = Encoding::ASN1Decoder.from_asn1(meta)
               case ts.id
               when :compression_zlib
-                @decompressor = Zlib::Inflate.new
+                @decompressor = Ccrypto::UtilFactory.instance(:decompression)
               else
                 raise DecompressionError, "Unknown compression type '#{ts.id}'"
               end
@@ -41,15 +41,20 @@ module CcipherFactory
       end
 
       def decompress_update(val)
-        check_state
-        res = @decompressor.inflate(val)
-        write_to_output(res)
-        res
+        if val.length > 0
+          check_state
+          begin
+            res = @decompressor.update(val)
+            write_to_output(res)
+            res
+          rescue Exception => ex
+            raise DecompressionError, ex
+          end
+        end
       end
 
       def decompress_final
-        check_state 
-        @decompressor.close
+        @decompressor.final
       end
 
       private

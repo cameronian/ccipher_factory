@@ -57,7 +57,7 @@ module CcipherFactory
         eccConf = Ccrypto::ECCConfig.new
         eccConf.keypair = @signing_key.keypair
         eccEng = Ccrypto::AlgoFactory.engine(eccConf)
-        sign = eccEng.sign(intOutputBuf.string)
+        sign = eccEng.sign(intOutputBuf.bytes)
 
         #sign = @signing_key.dsa_sign_asn1(intOutputBuf.string)
 

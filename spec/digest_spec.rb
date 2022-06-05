@@ -11,7 +11,9 @@ RSpec.describe CcipherFactory::Digest do
     data = "testing"
 
     supported.supported.each do |da|
-      
+     
+      next if da =~ /haraka/
+      puts "Testing digest #{da}"
       d = subject.instance
       digRes = MemBuf.new
       d.output(digRes)
@@ -27,22 +29,22 @@ RSpec.describe CcipherFactory::Digest do
       d2.digest_update(data)
       meta2 = d2.digest_final
       expect(meta2 == meta).to be true
-      expect(digRes.string.length > 0).to be true
-      expect(digRes.string == digRes2.string).to be true
+      expect(digRes.bytes.length > 0).to be true
+      expect(digRes.bytes == digRes2.bytes).to be true
 
       rd = subject.from_asn1(meta)
       rdigRes = MemBuf.new
       rd.output(rdigRes)
       rd.digest_update(data)
       rmeta = rd.digest_final
-      expect(rdigRes.string == digRes2.string).to be true
+      expect(rdigRes.bytes == digRes2.bytes).to be true
 
       rd2 = subject.from_asn1(meta)
       rdigRes2 = MemBuf.new
       rd2.output(rdigRes2)
       rd2.digest_update("invalid data!")
       rmeta = rd2.digest_final
-      expect(rdigRes2.string == digRes2.string).to be false
+      expect(rdigRes2.bytes == digRes2.bytes).to be false
 
 
       # attached mode
@@ -60,8 +62,8 @@ RSpec.describe CcipherFactory::Digest do
       d2.digest_update(data)
       meta2 = d2.digest_final
       expect(meta2 == meta).to be true
-      expect(digRes.string.length > 0).to be true
-      expect(digRes.string == digRes2.string).to be true
+      expect(digRes.bytes.length > 0).to be true
+      expect(digRes.bytes == digRes2.bytes).to be true
       expect(d.digestVal == d2.digestVal).to be true
 
       rd = subject.from_asn1(meta)

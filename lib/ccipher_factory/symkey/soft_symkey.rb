@@ -40,7 +40,12 @@ module CcipherFactory
       ts.set(:keytype, Tag.constant(@keytype))
       ts.set(:keysize, @keysize)
       if is_attach_mode? 
-        ts.set(:key, @key)
+        case @key
+        when String
+          ts.set(:key, @key)
+        else
+          ts.set(:key, @key.to_bin)
+        end
       else
         ts.set(:key, "")
       end

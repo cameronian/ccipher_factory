@@ -41,7 +41,6 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
           puts "Testing config : #{k}-#{ks}"
           sk = CcipherFactory::SymKeyGenerator.generate(k, ks)
-          p sk
           c = subject.encryptor
           c.key = sk
           encBuf = MemBuf.new
@@ -58,11 +57,11 @@ RSpec.describe CcipherFactory::SymKeyCipher do
           dec.key = sk
           dec.decrypt_init
           dec.decrypt_update_meta(meta)
-          dec.decrypt_update_cipher(encBuf.string)
+          dec.decrypt_update_cipher(encBuf.bytes)
           dec.decrypt_final
 
-          puts decBuf.string if decBuf.string != data
-          expect(decBuf.string == data).to be true
+          puts decBuf.bytes if decBuf.bytes != data
+          expect(decBuf.bytes == data).to be true
 
           # external key
           skBin = sk.to_asn1
@@ -80,10 +79,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
           dec2.key = rsk
           dec2.decrypt_init
           dec2.decrypt_update_meta(meta)
-          dec2.decrypt_update_cipher(encBuf.string)
+          dec2.decrypt_update_cipher(encBuf.bytes)
           dec2.decrypt_final
 
-          expect(decBuf2.string == data).to be true
+          expect(decBuf2.bytes == data).to be true
 
           # attached mode for symkey
           sk.attach_mode
@@ -97,10 +96,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
           dec3.key = rsk2
           dec3.decrypt_init
           dec3.decrypt_update_meta(meta)
-          dec3.decrypt_update_cipher(encBuf.string)
+          dec3.decrypt_update_cipher(encBuf.bytes)
           dec3.decrypt_final
 
-          expect(decBuf3.string == data).to be true
+          expect(decBuf3.equals?(data)).to be true
 
 
         else
@@ -126,11 +125,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
             dec.key = sk
             dec.decrypt_init
             dec.decrypt_update_meta(meta)
-            dec.decrypt_update_cipher(encBuf.string)
+            dec.decrypt_update_cipher(encBuf.bytes)
             dec.decrypt_final
 
-            p decBuf.string
-            expect(decBuf.string == data).to be true
+            expect(decBuf.equals?(data)).to be true
 
             # external key
             skBin = sk.to_asn1
@@ -148,16 +146,18 @@ RSpec.describe CcipherFactory::SymKeyCipher do
             dec2.key = rsk
             dec2.decrypt_init
             dec2.decrypt_update_meta(meta)
-            dec2.decrypt_update_cipher(encBuf.string)
+            dec2.decrypt_update_cipher(encBuf.bytes)
             dec2.decrypt_final
 
-            expect(decBuf2.string == data).to be true
+            expect(decBuf2.equals?(data)).to be true
 
             # attached mode for symkey
             sk.attach_mode
             skBin = sk.to_asn1
             rsk2 = CcipherFactory::SoftSymKey.from_asn1(skBin)
-            expect(rsk2.key == sk.key).to be true
+
+            expect(rsk2.key == sk.key.to_bin).to be true
+
             dec3 = subject.decryptor
             expect(dec3).not_to be_nil
             decBuf3 = MemBuf.new
@@ -165,10 +165,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
             dec3.key = rsk2
             dec3.decrypt_init
             dec3.decrypt_update_meta(meta)
-            dec3.decrypt_update_cipher(encBuf.string)
+            dec3.decrypt_update_cipher(encBuf.bytes)
             dec3.decrypt_final
 
-            expect(decBuf3.string == data).to be true
+            expect(decBuf3.equals?(data)).to be true
 
 
           end
@@ -192,13 +192,13 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     expect { c.encrypt_init }.to raise_exception(CcipherFactory::SymKeyCipherError)
 
 
-    sk = CcipherFactory::SymKeyGenerator.generate(:blowfish, 256)
+    sk = CcipherFactory::SymKeyGenerator.generate(:aria, 512)
     c = subject.encryptor
     encBuf = MemBuf.new
     c.output(encBuf)
     c.key = sk
     # invalid keysize
-    expect { c.encrypt_init }.to raise_exception(ArgumentError)
+    expect { c.encrypt_init }.to raise_exception(CcipherFactory::SymKeyCipherError)
 
     sk = CcipherFactory::SymKeyGenerator.generate(:aes, 512)
     c = subject.encryptor
@@ -235,10 +235,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dec.key = sk
     dec.decrypt_init
     dec.decrypt_update_meta(meta)
-    dec.decrypt_update_cipher(encBuf.string)
+    dec.decrypt_update_cipher(encBuf.bytes)
     dec.decrypt_final
 
-    expect(decBuf.string == fileContent).to be true
+    expect(decBuf.equals?(fileContent)).to be true
 
   end
 
@@ -263,10 +263,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dec.key = sk
     dec.decrypt_init
     dec.decrypt_update_meta(meta)
-    dec.decrypt_update_cipher(encBuf.string)
+    dec.decrypt_update_cipher(encBuf.bytes)
     dec.decrypt_final
 
-    expect(decBuf.string == data).to be true
+    expect(decBuf.equals?(data)).to be true
 
     # external key
     skBin = sk.to_asn1
@@ -284,16 +284,17 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dec2.key = rsk
     dec2.decrypt_init
     dec2.decrypt_update_meta(meta)
-    dec2.decrypt_update_cipher(encBuf.string)
+    dec2.decrypt_update_cipher(encBuf.bytes)
     dec2.decrypt_final
 
-    expect(decBuf2.string == data).to be true
+    expect(decBuf2.equals?(data)).to be true
 
     # attached mode
     sk.attach_mode
     skBin = sk.to_asn1
     rsk2 = CcipherFactory::SoftSymKey.from_asn1(skBin)
-    expect(rsk2.key == sk.key).to be true
+    comparator = Ccrypto::UtilFactory.instance(:comparator)
+    expect(comparator.is_equal?(rsk2.key, sk.key)).to be true
     dec3 = subject.decryptor
     expect(dec3).not_to be_nil
     decBuf3 = MemBuf.new
@@ -301,10 +302,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dec3.key = rsk2
     dec3.decrypt_init
     dec3.decrypt_update_meta(meta)
-    dec3.decrypt_update_cipher(encBuf.string)
+    dec3.decrypt_update_cipher(encBuf.bytes)
     dec3.decrypt_final
 
-    expect(decBuf3.string == data).to be true
+    expect(decBuf3.equals?(data)).to be true
 
   end
 
@@ -339,10 +340,10 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dec.key = rsk
     dec.decrypt_init
     dec.decrypt_update_meta(meta)
-    dec.decrypt_update_cipher(encBuf.string)
+    dec.decrypt_update_cipher(encBuf.bytes)
     dec.decrypt_final
 
-    expect(decBuf.string == data).to be true
+    expect(decBuf.equals?(data)).to be true
 
     sk.activate_password_verifier
     skBin = sk.to_asn1
@@ -360,14 +361,12 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     dec.key = wdk
     dec.decrypt_init
     dec.decrypt_update_meta(meta)
-    dec.decrypt_update_cipher(encBuf.string)
+    dec.decrypt_update_cipher(encBuf.bytes)
     expect {
       dec.decrypt_final
     }.to raise_exception(CcipherFactory::SymKeyDecryptionError)
 
-    p decBuf.string
-    p data
-    expect(decBuf.string != data).to be true
+    expect(decBuf.equals?(data)).to be false
 
     expect { 
       CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|

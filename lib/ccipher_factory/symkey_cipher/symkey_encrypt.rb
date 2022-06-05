@@ -34,7 +34,8 @@ module CcipherFactory
         @cconf.cipherOps = :encrypt
         begin
           @cipher = Ccrypto::AlgoFactory.engine(@cconf)
-        rescue Ccrypto::CipherEngineException => ex
+        #rescue Ccrypto::CipherEngineException => ex
+        rescue Exception => ex
           raise SymKeyCipherError, ex
         end
 
@@ -68,18 +69,25 @@ module CcipherFactory
       end
 
       def encrypt_update(val)
-        @totalPlain += val.length
-        cval = compress_data_if_active(val)
-        @totalCompressed += cval.length
 
-        enc = @cipher.update(cval)
-        write_to_output(enc)
+        if not_empty?(val)
+          @totalPlain += val.length
+          cval = compress_data_if_active(val)
+          @totalCompressed += cval.length
+
+          enc = @cipher.update(cval)
+          if not_empty?(enc)
+            write_to_output(enc)
+          end
+        end
+
       end
 
       def encrypt_final
 
         #if not is_gcm_mode?
           enc = @cipher.final
+          logger.debug "Cipher final returns #{enc.length} bytes"
           write_to_output(enc)
         #end
 
@@ -107,7 +115,13 @@ module CcipherFactory
           logger.debug "Encoding mode #{@mode}"
         end
 
-        ts.set(:iv, is_empty?(@iv) ?  "" : @iv)
+        if is_empty?(@iv)
+          ts.set(:iv, "")
+          logger.debug "Encoding empty IV"
+        else
+          ts.set(:iv, @iv)
+          logger.debug "Encoding IV of #{@iv.length} bytes"
+        end
 
         if is_compression_on?
           ts.set(:compression, compressor.compress_final)
@@ -117,9 +131,16 @@ module CcipherFactory
         end
 
         if @cconf.respond_to?(:auth_tag)
-          ts.set(:aad, is_empty?(@cconf.auth_tag) ? "" : @cconf.auth_tag)
+          if is_empty?(@cconf.auth_tag)
+            ts.set(:auth_tag, "")
+            logger.debug "Encoding empty AuthTag"
+          else
+            ts.set(:auth_tag, @cconf.auth_tag)
+            logger.debug "Encoding AuthTag of #{@cconf.auth_tag.length}"
+          end
         else
-          ts.set(:aad, "")
+          ts.set(:auth_tag, "")
+          logger.debug "AuthTag not relevent"
         end
 
         ts.to_asn1
@@ -134,6 +155,7 @@ module CcipherFactory
       def logger
         if @logger.nil?
           @logger = Tlogger.new
+          @logger.tag = :symkey_enc
         end
         @logger
       end

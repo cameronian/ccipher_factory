@@ -53,10 +53,12 @@ module CcipherFactory
 
           case curve
           when Ccrypto::ECCConfig
+            logger.debug "ECCConfig"
             key = Ccrypto::AlgoFactory.engine(curve).generate_keypair
             ecKey = KeyPair::ECCKeyPair.new(key)
             ecKey.curve = curve.curve
           when String
+            logger.debug "String to ECCConfig"
             key = Ccrypto::AlgoFactory.engine(Ccrypto::ECCConfig.new(curve)).generate_keypair
             ecKey = KeyPair::ECCKeyPair.new(key)
             ecKey.curve = curve

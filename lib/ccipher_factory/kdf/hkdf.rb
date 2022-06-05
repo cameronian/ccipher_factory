@@ -88,7 +88,7 @@ module CcipherFactory
 
         hkdf = Ccrypto::AlgoFactory.engine(hconf)
 
-        @derivedVal = hkdf.derive(intOutputBuf.string)
+        @derivedVal = hkdf.derive(intOutputBuf.bytes)
 
         write_to_output(@derivedVal) if is_output_given?
 

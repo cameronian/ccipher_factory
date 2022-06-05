@@ -20,6 +20,7 @@ RSpec.describe CcipherFactory::AsymKeySigner do
     ver.verify_update_data(data)
     res = ver.verify_final
 
+    p res
     expect(res).to be true
     #expect(ver.embedded_signer.to_der == ask.public_key.public_key.to_der).to be true
     expect(ask.is_public_key_equal?(ver.embedded_signer)).to be true

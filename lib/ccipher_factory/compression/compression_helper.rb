@@ -91,6 +91,7 @@ module CcipherFactory
       def logger
         if @logger.nil?
           @logger = Tlogger.new
+          @logger.tag = :comp_helper
         end
         @logger
       end

@@ -31,12 +31,12 @@ RSpec.describe CcipherFactory::CompositeCipher do
 
         cv.decrypt_verify_init
         cv.decrypt_verify_update_meta(meta)
-        cv.decrypt_verify_update_cipher(out.string)
+        cv.decrypt_verify_update_cipher(out.bytes)
         res = cv.decrypt_verify_final
 
         p res
         expect(res).to be true
-        expect(dout.string == data).to be true
+        expect(dout.equals?(data)).to be true
         #expect(cv.embedded_signer.to_der == ask.public_key.public_key.to_der).to be true
         expect(ask.is_public_key_equal?(cv.embedded_signer)).to be true
 
@@ -76,12 +76,12 @@ RSpec.describe CcipherFactory::CompositeCipher do
 
         cv.decrypt_verify_init
         cv.decrypt_verify_update_meta(meta)
-        cv.decrypt_verify_update_cipher(out.string)
+        cv.decrypt_verify_update_cipher(out.bytes)
         res = cv.decrypt_verify_final   
 
         p res
         expect(res).to be true
-        expect(dout.string == data).to be true
+        expect(dout.equals?(data)).to be true
       end
     end
     
@@ -99,6 +99,7 @@ RSpec.describe CcipherFactory::CompositeCipher do
     out = MemBuf.new
     cc.output(out)
     cc.signing_key = ssk
+    cc.sender_keypair = ssk
     cc.encryption_key = esk.public_key
 
     cc.sign_encrypt_init
@@ -112,12 +113,12 @@ RSpec.describe CcipherFactory::CompositeCipher do
 
     cv.decrypt_verify_init
     cv.decrypt_verify_update_meta(meta)
-    cv.decrypt_verify_update_cipher(out.string)
+    cv.decrypt_verify_update_cipher(out.bytes)
     res = cv.decrypt_verify_final
 
     p res
     expect(res).to be true
-    expect(dout.string == data).to be true
+    expect(dout.equals?(data)).to be true
     #expect(cv.embedded_signer.to_der == ssk.public_key.public_key.to_der).to be true
     expect(ssk.is_public_key_equal?(cv.embedded_signer)).to be true
     
@@ -154,12 +155,12 @@ RSpec.describe CcipherFactory::CompositeCipher do
 
         cv.decrypt_verify_init
         cv.decrypt_verify_update_meta(meta)
-        cv.decrypt_verify_update_cipher(out.string)
+        cv.decrypt_verify_update_cipher(out.bytes)
         res = cv.decrypt_verify_final
 
         p res
         expect(res).to be true
-        expect(dout.string == data).to be true
+        expect(dout.equals?(data)).to be true
 
       end
     end

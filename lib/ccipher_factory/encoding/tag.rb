@@ -15,6 +15,7 @@ module CcipherFactory
       @parentTag = []
       @definedTag = {}
       @logger = Tlogger.new
+      @logger.tag = :tag
       instance_eval(&block)
     end
 
@@ -37,7 +38,8 @@ module CcipherFactory
     end
 
     def self.constant_key(val)
-      CONSTANT.invert[val]
+      # for some reasons if not done like this, Java side has issue finding the value
+      CONSTANT.invert[val.to_s.to_i]
     end
 
     def self.text(key)
@@ -127,14 +129,53 @@ module CcipherFactory
         add_constant(:shake128, 0x0120)
         add_constant(:shake256, 0x0121)
 
-        add_constant(:blake2b512, 0x0130)
-        add_constant(:blake2s256, 0x0131)
+        add_constant(:blake2b160, 0x0130)
+        add_constant(:blake2b256, 0x0131)
+        add_constant(:blake2b384, 0x0132)
+        add_constant(:blake2b512, 0x0133)
 
-        add_constant(:sm3, 0x0140)
+        add_constant(:blake2s128, 0x0134)
+        add_constant(:blake2s160, 0x0135)
+        add_constant(:blake2s224, 0x0136)
+        add_constant(:blake2s256, 0x0137)
 
-        add_constant(:ripemd160, 0x0150)
+        add_constant(:haraka256, 0x0140)
+        add_constant(:haraka512, 0x0141)
 
-        add_constant(:whirlpool, 0x0160)
+        add_constant(:shake128_256, 0x0142)
+        add_constant(:shake256_512, 0x0143)
+
+        add_constant(:sm3, 0x0144)
+        add_constant(:whirlpool, 0x0145)
+
+        add_constant(:keccak224, 0x0150)
+        add_constant(:keccak256, 0x0151)
+        add_constant(:keccak288, 0x0152)
+        add_constant(:keccak384, 0x0153)
+        add_constant(:keccak512, 0x0154)
+
+        add_constant(:ripemd128, 0x0160)
+        add_constant(:ripemd160, 0x0161)
+        add_constant(:ripemd256, 0x0162)
+        add_constant(:ripemd320, 0x0163)
+
+        add_constant(:skein1024_1024, 0x0170)
+        add_constant(:skein1024_384, 0x0171)
+        add_constant(:skein1024_512, 0x0172)
+        
+        add_constant(:skein256_128, 0x0173)
+        add_constant(:skein256_160, 0x0174)
+        add_constant(:skein256_224, 0x0175)
+        add_constant(:skein256_256, 0x0176)
+
+        add_constant(:skein512_128, 0x0177)
+        add_constant(:skein512_160, 0x0178)
+        add_constant(:skein512_224, 0x0179)
+        add_constant(:skein512_256, 0x0180)
+        add_constant(:skein512_384, 0x0181)
+        add_constant(:skein512_512, 0x0182)
+
+
       end
       register(:digest_attached, "#parent.21", "Digest with output attached")
 

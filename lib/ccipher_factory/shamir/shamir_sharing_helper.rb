@@ -1,5 +1,5 @@
 
-require_relative 'shamir_sharing'
+#require_relative 'shamir_sharing'
 
 module CcipherFactory
   module ShamirSharingHelper
@@ -10,20 +10,36 @@ module CcipherFactory
 
     def shamir_split(data, totalShare, reqShare)
 
-      ss = ShamirSharing.new(reqShare, data)
+      rand = Ccrypto::AlgoFactory.engine(Ccrypto::SecureRandomConfig)
 
-      serial = SecureRandom.random_bytes(8)
-      shares = []
-      (1..totalShare).each do |i|
-        share = ss.compute_share(i)
+      ssc = Ccrypto::SecretSharingConfig.new
+      ssc.split_into = totalShare
+      ssc.required_parts = reqShare
+      ss = Ccrypto::AlgoFactory.engine(ssc)
+
+      serial = rand.random_bytes(8)
+      shares = ss.split(data)
+      shares = shares.map { |s| 
         ts = Encoding::ASN1Encoder.instance(:shared_secret)
         ts.set(:req_share, reqShare)
-        ts.set(:share_id, share[0])
+        ts.set(:share_id, s[0])
         ts.set(:serial, serial)
-        sbin = share[1].map { |v| v.chr }.join
-        ts.set(:shared_value, sbin) 
-        shares << ts.to_asn1
-      end
+        #sbin = share[1].map { |v| v.chr }.join
+        ts.set(:shared_value, s[1]) 
+        ts.to_asn1
+      }
+
+      #shares = []
+      #(1..totalShare).each do |i|
+      #  share = ss.compute_share(i)
+      #  ts = Encoding::ASN1Encoder.instance(:shared_secret)
+      #  ts.set(:req_share, reqShare)
+      #  ts.set(:share_id, share[0])
+      #  ts.set(:serial, serial)
+      #  sbin = share[1].map { |v| v.chr }.join
+      #  ts.set(:shared_value, sbin) 
+      #  shares << ts.to_asn1
+      #end
 
       shares
 
@@ -34,7 +50,7 @@ module CcipherFactory
       shares = [shares] if not shares.is_a?(Array)
       shares = [] if is_empty?(shares)
 
-      reqShare = 0
+      reqShare = nil
       res = { }
       foundSerial = nil
       shares.each do |s|
@@ -45,11 +61,15 @@ module CcipherFactory
         serial = ts.value(:serial)
         raise InvalidShare, "Given share not in same batch. Cannot proceed" if not_empty?(foundSerial) and serial != foundSerial
 
-        reqShare = ts.value(:req_share)
+        rs = ts.value(:req_share) 
+        raise ShamirSharingError, "Inconsistancy required shares value in given shares" if not_empty?(reqShare) and rs != reqShare
+        reqShare = rs  
+
         sid = ts.value(:share_id)
         if not res.keys.include?(sid)
           val = ts.value(:shared_value)
-          res[sid.to_i] = val.chars.map(&:ord)
+          #res[sid.to_i] = val.chars.map(&:ord)
+          res[sid.to_i] = val
         end
 
         foundSerial = serial
@@ -57,8 +77,11 @@ module CcipherFactory
 
       raise NotEnoughShare, "Required #{reqShare} share(s) but only #{res.size} is/are given" if res.size < reqShare or res.size == 0
 
-      ss = ShamirSharing.new(reqShare)
-      ss.recover_secretdata(res.to_a)
+      #ssc = Ccrypto::SecretSharingConfig.new
+      #ssc.required_parts = reqShare
+      #ss = Ccrypto::AlgoFactory.engine(ssc)
+      ss = Ccrypto::AlgoFactory.engine(Ccrypto::SecretSharingConfig)
+      ss.combine(reqShare, res)
 
     end
 

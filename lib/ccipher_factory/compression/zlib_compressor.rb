@@ -8,7 +8,8 @@ module CcipherFactory
 
       def compress_init(*args, &block)
 
-        @compressor = Zlib::Deflate.new
+        @compressor = Ccrypto::UtilFactory.instance(:compression, Ccrypto::CompressionConfig.new)
+        #@compressor = Zlib::Deflate.new
 
         if block
           instance_eval(&block)
@@ -20,17 +21,26 @@ module CcipherFactory
       end
 
       def compress_update(val)
-        res = @compressor.deflate(val, Zlib::SYNC_FLUSH)
+        res = @compressor.update(val)
+        #res = @compressor.deflate(val, Zlib::SYNC_FLUSH)
         write_to_output(res)
         res
       end
 
       def compress_final
-        @compressor.finish
-        @compressor.close
+        @compressor.final
 
         ts = Encoding::ASN1Encoder.instance(:compression_zlib)
         ts.to_asn1
+      end
+
+      private
+      def logger
+        if @logger.nil?
+          @logger = Tlogger.new
+          @logger.tag = :zlibComp
+        end
+        @logger
       end
 
     end

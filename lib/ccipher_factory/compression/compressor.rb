@@ -3,13 +3,19 @@ require_relative 'zlib_compressor'
 require_relative 'zlib_decompressor'
 
 module CcipherFactory
+  class CompressionError < StandardError; end
+  class DecompressionError < StandardError; end
+end
+
+module CcipherFactory
   module Compression
-    class CompressionError < StandardError; end
-    class DecompressionError < StandardError; end
+    #class CompressionError < StandardError; end
+    #class DecompressionError < StandardError; end
 
     module NullCompressor
       def method_missing(mtd, *args, &block)
-        args
+        # sink hole
+        #args
       end
     end
 

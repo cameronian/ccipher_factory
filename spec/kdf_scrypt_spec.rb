@@ -15,7 +15,7 @@ RSpec.describe CcipherFactory::KDF do
     meta = kdf.derive_final
 
     expect(meta).not_to be_nil
-    expect(kdfOut.string).not_to be_nil
+    expect(kdfOut.bytes).not_to be_nil
 
     rkdf = subject.from_asn1(meta)
     rout = MemBuf.new
@@ -23,9 +23,8 @@ RSpec.describe CcipherFactory::KDF do
     rkdf.derive_update(input)
     rkdf.derive_final
 
-    p rout.string
-    expect(rout.string).not_to be_empty
-    expect(rout.string == kdfOut.string).to be true
+    expect(rout.bytes).not_to be_empty
+    expect(rout.bytes == kdfOut.bytes).to be true
 
   end
 
@@ -45,7 +44,7 @@ RSpec.describe CcipherFactory::KDF do
     meta = kdf.derive_final
 
     expect(meta).not_to be_nil
-    expect(kdfOut.string).not_to be_nil
+    expect(kdfOut.bytes).not_to be_nil
 
     rkdf = subject.from_asn1(meta)
     rout = MemBuf.new
@@ -53,9 +52,8 @@ RSpec.describe CcipherFactory::KDF do
     rkdf.derive_update(input)
     rkdf.derive_final
 
-    p rout.string
-    expect(rout.string).not_to be_empty
-    expect(rout.string == kdfOut.string).to be true
+    expect(rout.bytes).not_to be_empty
+    expect(rout.bytes == kdfOut.bytes).to be true
 
   end
 

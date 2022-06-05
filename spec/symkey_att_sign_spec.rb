@@ -24,10 +24,10 @@ RSpec.describe CcipherFactory::SymKeySigner do
     ver.output(vout)
     ver.verification_key = sk
     ver.att_verify_init
-    ver.att_verify_update(out.string)
+    ver.att_verify_update(out.bytes)
     res = ver.att_verify_final
 
-    expect(vout.string == data).to be true
+    expect(vout.equals?(data)).to be true
 
   end
 
@@ -54,10 +54,10 @@ RSpec.describe CcipherFactory::SymKeySigner do
     ver.output(vout)
     ver.verification_key = sk
     ver.att_verify_init
-    ver.att_verify_update(out.string)
+    ver.att_verify_update(out.bytes)
     res = ver.att_verify_final
 
-    expect(vout.string == data).to be true
+    expect(vout.equals?(data)).to be true
 
   end
 

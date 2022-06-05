@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: ccrypto-java
-  revision: 8ef5f5b554ab3ae089e55035d5deb8d379c352a9
+  revision: d2fd06975696f958fa989ac41274583433d9b0c3
   branch: master
   specs:
     ccrypto-java (0.1.0)
@@ -19,7 +19,15 @@ PATH
   specs:
     ccipher_factory (0.1.0)
       tlogger
-      toolrack
+
+GIT
+  remote: toolrack
+  revision: 8e1c8caf8bee89abc3759528b8f5bb22a3128e48
+  branch: master
+  specs:
+    toolrack (0.18.3)
+      base58
+      tlogger
 
 GEM
   remote: https://rubygems.org/
@@ -41,9 +49,6 @@ GEM
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
     tlogger (0.26.3)
-    toolrack (0.18.3)
-      base58
-      tlogger
 
 PLATFORMS
   universal-java-11
@@ -54,6 +59,7 @@ DEPENDENCIES
   ccrypto-java!
   rake (~> 13.0)
   rspec (~> 3.0)
+  toolrack!
 
 BUNDLED WITH
    2.3.6

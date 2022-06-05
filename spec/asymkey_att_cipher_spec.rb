@@ -11,6 +11,7 @@ RSpec.describe CcipherFactory::AsymKeyCipher do
 
     out = MemBuf.new
     enc.output(out)
+    enc.sender_keypair = recp
     enc.recipient_key = recp.public_key
 
     enc.att_encrypt_init #({ recipient_public: recp.public_key })
@@ -23,10 +24,10 @@ RSpec.describe CcipherFactory::AsymKeyCipher do
     dec.decryption_key = recp
 
     dec.att_decrypt_init #(recp)
-    dec.att_decrypt_update(out.string)
+    dec.att_decrypt_update(out.bytes)
     dec.att_decrypt_final
 
-    expect(dout.string == data).to be true
+    expect(dout.equals?(data)).to be true
 
   end
 
@@ -46,6 +47,7 @@ RSpec.describe CcipherFactory::AsymKeyCipher do
     dig.digest_init
 
     enc.compression_on
+    enc.sender_keypair = recp
     enc.recipient_key = recp.public_key
     enc.att_encrypt_init #({ recipient_public: recp.public_key })
     contLength = 0
@@ -57,7 +59,7 @@ RSpec.describe CcipherFactory::AsymKeyCipher do
       enc.att_encrypt_update(cont)
     end
     ts = enc.att_encrypt_final
-    puts "enc out: #{out.string.length}"
+    puts "enc out: #{out.bytes.length}"
 
     digRes = dig.digest_final
 
@@ -67,19 +69,19 @@ RSpec.describe CcipherFactory::AsymKeyCipher do
     dec.decryption_key = recp
 
     dec.att_decrypt_init #(recp)
-    dec.att_decrypt_update(out.string)
+    dec.att_decrypt_update(out.bytes)
     dec.att_decrypt_final
 
     dig2 = CcipherFactory::Digest.from_asn1(digRes)
     dig2Out = MemBuf.new
     dig2.output(dig2Out)
-    dig2.digest_update(dout.string)
+    dig2.digest_update(dout.bytes)
     dig2.digest_final
 
-    puts "decrypted length : #{dout.string.length}"
+    puts "decrypted length : #{dout.bytes.length}"
 
-    expect(digOut.string == dig2Out.string).to be true
-    expect(dout.string.length == contLength).to be true
+    expect(digOut.bytes == dig2Out.bytes).to be true
+    expect(dout.bytes.length == contLength).to be true
 
   end
 

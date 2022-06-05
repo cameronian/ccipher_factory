@@ -42,7 +42,7 @@ module CcipherFactory
 
         @digest.digest_final
         
-        res = Ccrypto::AlgoFactory.engine(Ccrypto::ECCConfig).verify(@signer, intOutputBuf.string, @sign)
+        res = Ccrypto::AlgoFactory.engine(Ccrypto::ECCConfig).verify(@signer, intOutputBuf.bytes, @sign)
         
         #res = @signer.dsa_verify_asn1(intOutputBuf.string, @sign)
 
