@@ -1,9 +1,0 @@
-
-
-spec :digest_attached do
-  field :oid, :oid, Tag.value(:digest_attached)
-  field :version, :int, 0x0100
-
-  field :digest_config, :bin
-  field :digest_value,  :bin
-end

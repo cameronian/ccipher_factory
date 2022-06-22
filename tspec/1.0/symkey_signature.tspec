@@ -1,9 +1,0 @@
-
-
-spec :symkey_signature do
-  field :oid, :oid, Tag.value(:symkey_signature)
-  field :version, :int, 0x0100
-
-  field :digest_algo, :int
-  field :signature, :bin
-end

@@ -1,6 +1,0 @@
-
-
-spec :compression_zlib do
-  field :oid, :oid, Tag.value(:compression_zlib)
-  field :version, :int, 0x0100
-end

@@ -1,9 +1,0 @@
-
-
-spec :sign_encrypt_cipher do
-  field :oid, :oid, Tag.value(:sign_encrypt_cipher)
-  field :version, :int, 0x0100
-
-  field :signer_config, :bin
-  field :cipher_config, :bin
-end

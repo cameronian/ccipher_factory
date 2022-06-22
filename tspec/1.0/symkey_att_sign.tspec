@@ -1,9 +1,0 @@
-
-
-spec :symkey_att_sign do
-  field :oid, :oid, Tag.value(:symkey_att_sign)
-  field :version, :int, 0x0100
-
-  field :symkey_signature, :bin
-  field :compression, :bin
-end
