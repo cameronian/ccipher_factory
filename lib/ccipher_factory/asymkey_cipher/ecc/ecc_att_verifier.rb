@@ -5,7 +5,6 @@ module CcipherFactory
   module AsymKeySigner
 
     module ECCAttVerifier
-      include Encoding::ASN1Decoder
       include Common
       include Compression::CompressionHelper
 
@@ -36,11 +35,11 @@ module CcipherFactory
 
           intOutputBuf.write(val)
           begin
-            extract_meta(intOutputBuf) do |meta, bal|
+            Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
-              ts = Encoding::ASN1Decoder.from_asn1(meta)
-              smeta = ts.value(:ecc_signature)
-              compression = ts.value(:compression)
+              ts = BinStruct.instance.struct_from_bin(meta)
+              smeta = ts.ecc_signature
+              compression = ts.compression
 
               decompressor_from_asn1(compression)
               if is_compression_on?

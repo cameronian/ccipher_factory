@@ -4,7 +4,6 @@ module CcipherFactory
   module AsymKeyCipher
     module ECCAttDecrypt
       include Common
-      include Encoding::ASN1Decoder 
 
       attr_accessor :decryption_key 
       def att_decrypt_init(opts = { }, &block)
@@ -23,7 +22,7 @@ module CcipherFactory
         if @dec.nil?
           intOutputBuf.write(val)
           begin
-            extract_meta(intOutputBuf) do |meta, bal|
+            Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
               @dec = AsymKeyCipher.decryptor(:ecc)
               @dec.output(@output)

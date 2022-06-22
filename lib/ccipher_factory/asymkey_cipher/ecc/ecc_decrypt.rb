@@ -32,16 +32,13 @@ module CcipherFactory
 
         raise ECCCipherError, "Output is required" if not is_output_given?
 
-        ts = Encoding::ASN1Decoder.from_asn1(meta)
-        senderPub = ts.value(:sender_public)
-        cipherConf = ts.value(:cipher_config)
-        keyConf = ts.value(:key_config)
-
-        #sender = OpenSSL::PKey::EC.new(senderPub)
+        ts = BinStruct.instance.struct_from_bin(meta)
+        senderPub = ts.sender_public
+        cipherConf = ts.cipher_config
+        keyConf = ts.key_config
+        
         sender = Ccrypto::AlgoFactory.engine(Ccrypto::ECCPublicKey).to_key(senderPub)
-        #derived = @decryption_key.dh_compute_key(sender.public_key)
         derived = @decryption_key.derive_dh_shared_secret(sender)
-        #derived = @decryption_key.derive_dh_shared_secret(@decryption_key.public_key)
 
         sessKey = DerivedSymKey.from_asn1(keyConf) do |ops|
           case ops

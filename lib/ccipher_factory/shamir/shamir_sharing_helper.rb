@@ -20,13 +20,20 @@ module CcipherFactory
       serial = rand.random_bytes(8)
       shares = ss.split(data)
       shares = shares.map { |s| 
-        ts = Encoding::ASN1Encoder.instance(:shared_secret)
-        ts.set(:req_share, reqShare)
-        ts.set(:share_id, s[0])
-        ts.set(:serial, serial)
-        #sbin = share[1].map { |v| v.chr }.join
-        ts.set(:shared_value, s[1]) 
-        ts.to_asn1
+        #ts = Encoding::ASN1Encoder.instance(:shared_secret)
+        ts = BinStruct.instance.struct(:shared_secret)
+        ts.req_share = reqShare
+        ts.share_id = s[0]
+        ts.serial = serial
+        ts.shared_value = s[1]
+        ts.encoded
+
+        #ts.set(:req_share, reqShare)
+        #ts.set(:share_id, s[0])
+        #ts.set(:serial, serial)
+        ##sbin = share[1].map { |v| v.chr }.join
+        #ts.set(:shared_value, s[1]) 
+        #ts.to_asn1
       }
 
       #shares = []
@@ -54,20 +61,20 @@ module CcipherFactory
       res = { }
       foundSerial = nil
       shares.each do |s|
-        ts = Encoding::ASN1Decoder.from_asn1(s)
+        ts = BinStruct.instance.struct_from_bin(s)
 
-        raise ShamirSharingError, "Not a shared secret envelope [#{ts.id}]" if ts.id != :shared_secret
+        raise ShamirSharingError, "Not a shared secret envelope [#{ts.id}]" if ts.oid != BTag.constant_value(:shared_secret)
 
-        serial = ts.value(:serial)
+        serial = ts.serial
         raise InvalidShare, "Given share not in same batch. Cannot proceed" if not_empty?(foundSerial) and serial != foundSerial
 
-        rs = ts.value(:req_share) 
+        rs = ts.req_share
         raise ShamirSharingError, "Inconsistancy required shares value in given shares" if not_empty?(reqShare) and rs != reqShare
         reqShare = rs  
 
-        sid = ts.value(:share_id)
+        sid = ts.share_id
         if not res.keys.include?(sid)
-          val = ts.value(:shared_value)
+          val = ts.shared_value
           #res[sid.to_i] = val.chars.map(&:ord)
           res[sid.to_i] = val
         end

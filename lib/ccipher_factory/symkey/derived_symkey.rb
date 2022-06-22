@@ -8,7 +8,7 @@ module CcipherFactory
     include Common
 
     def self.from_asn1(bin, &block)
-      ts = Encoding::ASN1Decoder.from_asn1(bin) 
+      ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
     end
 
@@ -19,13 +19,13 @@ module CcipherFactory
       pass = block.call(:password)
       raise SymKeyError, "Password to derive symkey is not available" if is_empty?(pass)
 
-      keytype = Tag.constant_key(ts.value(:keytype))
-      keysize = ts.value(:keysize)
+      keytype = BTag.value_constant(ts.keytype)
+      keysize = ts.keysize
       dsk = DerivedSymKey.new(keytype, keysize) 
-      dsk.kdf = KDF.from_asn1(ts.value(:kdf_config)) 
+      dsk.kdf = KDF.from_asn1(ts.kdf_config)
       dsk.derive(pass)
 
-      kcvBin = ts.value(:kcv)
+      kcvBin = ts.kcv
 
       # default is NOT to generate the KCV flag to beat the recursive test 
       if block
@@ -76,18 +76,32 @@ module CcipherFactory
 
     def to_asn1
 
-      ts = Encoding::ASN1Encoder.instance(:symkey_derived)
-      ts.set(:keytype, Tag.constant(@keytype))
-      ts.set(:keysize, @keysize)
-      ts.set(:kdf_config, @kdfAsn1)
+      ts = BinStruct.instance.struct(:symkey_derived)
+      ts.keytype = BTag.constant_value(@keytype)
+      ts.keysize = @keysize
+      ts.kdf_config = @kdfAsn1
       if @passVer == true
         kcv = KCV.new
         kcv.key = self
-        ts.set(:kcv, kcv.to_asn1)
+        ts.kcv = kcv.to_asn1
       else
-        ts.set(:kcv, "")
+        ts.kcv = ""
+        #ts.set(:kcv, "")
       end
-      ts.to_asn1
+      ts.encoded
+
+      #ts = Encoding::ASN1Encoder.instance(:symkey_derived)
+      #ts.set(:keytype, Tag.constant(@keytype))
+      #ts.set(:keysize, @keysize)
+      #ts.set(:kdf_config, @kdfAsn1)
+      #if @passVer == true
+      #  kcv = KCV.new
+      #  kcv.key = self
+      #  ts.set(:kcv, kcv.to_asn1)
+      #else
+      #  ts.set(:kcv, "")
+      #end
+      #ts.to_asn1
     end
 
     def logger

@@ -6,7 +6,6 @@ module CcipherFactory
 
     module SymKeyAttVerify
       include Common
-      include Encoding::ASN1Decoder
       include Compression::CompressionHelper
 
       attr_accessor :verification_key
@@ -30,15 +29,21 @@ module CcipherFactory
         if @ver.nil?
           intOutputBuf.write(val)
           begin
-            extract_meta(intOutputBuf) do |meta, bal|
+            Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
-              ts = Encoding::ASN1Decoder.from_asn1(meta)
+              ts = BinStruct.instance.struct_from_bin(meta)
+              #ts = Encoding::ASN1Decoder.from_asn1(meta)
 
-              vmeta = ts.value(:symkey_signature)
-              compression = ts.value(:compression)
+              #vmeta = ts.value(:symkey_signature)
+              #compression = ts.value(:compression)
+              vmeta = ts.symkey_signature
+              compression = ts.compression
 
-              cts = Encoding::ASN1Decoder.from_asn1(compression)
-              if cts.id == :compression_zlib
+              p compression
+
+              #cts = Encoding::ASN1Decoder.from_asn1(compression)
+              cts = BinStruct.instance.struct_from_bin(compression)
+              if cts.oid == BTag.constant_value(:compression_zlib)
                 compression_on
                 decompressor.decompress_update_meta(compression)
               end

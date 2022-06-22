@@ -106,44 +106,87 @@ module CcipherFactory
         #logger.debug "Mode : #{@mode}"
         #logger.debug "Output : #{conv.to_hex(@output.string)}"
 
-        ts = Encoding::ASN1Encoder.instance(:symkey_cipher)
+        #ts = Encoding::ASN1Encoder.instance(:symkey_cipher)
+        ts = BinStruct.instance.struct(:symkey_cipher)
         if is_empty?(@mode)
-          ts.set(:mode, 0)
+          ts.mode = 0
           logger.debug "Encoding null mode"
         else
-          ts.set(:mode, Tag.constant(@mode))
+          ts.mode = BTag.constant_value(@mode)
           logger.debug "Encoding mode #{@mode}"
         end
 
         if is_empty?(@iv)
-          ts.set(:iv, "")
+          ts.iv = ""
           logger.debug "Encoding empty IV"
         else
-          ts.set(:iv, @iv)
+          ts.iv = @iv
           logger.debug "Encoding IV of #{@iv.length} bytes"
         end
 
         if is_compression_on?
-          ts.set(:compression, compressor.compress_final)
+          ts.compression = compressor.compress_final
           logger.tdebug :symkey_enc, "Plain : #{@totalPlain} / Compressed : #{@totalCompressed} = #{(@totalCompressed*1.0)/@totalPlain*100} %"
         else
-          ts.set(:compression, Encoding::ASN1Encoder.instance(:compression_none).to_asn1)
+          ts.compression = BinStruct.instance.struct(:compression_none).encoded
         end
 
         if @cconf.respond_to?(:auth_tag)
           if is_empty?(@cconf.auth_tag)
-            ts.set(:auth_tag, "")
+            ts.auth_tag = ""
             logger.debug "Encoding empty AuthTag"
           else
-            ts.set(:auth_tag, @cconf.auth_tag)
+            ts.auth_tag = @cconf.auth_tag
             logger.debug "Encoding AuthTag of #{@cconf.auth_tag.length}"
           end
         else
-          ts.set(:auth_tag, "")
+          ts.auth_tag = ""
           logger.debug "AuthTag not relevent"
         end
 
-        ts.to_asn1
+        logger.debug "encoding : #{ts.inspect}"
+
+        ts.encoded
+
+
+        #ts = Encoding::ASN1Encoder.instance(:symkey_cipher)
+        #if is_empty?(@mode)
+        #  ts.set(:mode, 0)
+        #  logger.debug "Encoding null mode"
+        #else
+        #  ts.set(:mode, Tag.constant(@mode))
+        #  logger.debug "Encoding mode #{@mode}"
+        #end
+
+        #if is_empty?(@iv)
+        #  ts.set(:iv, "")
+        #  logger.debug "Encoding empty IV"
+        #else
+        #  ts.set(:iv, @iv)
+        #  logger.debug "Encoding IV of #{@iv.length} bytes"
+        #end
+
+        #if is_compression_on?
+        #  ts.set(:compression, compressor.compress_final)
+        #  logger.tdebug :symkey_enc, "Plain : #{@totalPlain} / Compressed : #{@totalCompressed} = #{(@totalCompressed*1.0)/@totalPlain*100} %"
+        #else
+        #  ts.set(:compression, Encoding::ASN1Encoder.instance(:compression_none).to_asn1)
+        #end
+
+        #if @cconf.respond_to?(:auth_tag)
+        #  if is_empty?(@cconf.auth_tag)
+        #    ts.set(:auth_tag, "")
+        #    logger.debug "Encoding empty AuthTag"
+        #  else
+        #    ts.set(:auth_tag, @cconf.auth_tag)
+        #    logger.debug "Encoding AuthTag of #{@cconf.auth_tag.length}"
+        #  end
+        #else
+        #  ts.set(:auth_tag, "")
+        #  logger.debug "AuthTag not relevent"
+        #end
+
+        #ts.to_asn1
 
       end
 

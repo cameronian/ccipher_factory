@@ -86,11 +86,16 @@ module CcipherFactory
 
         meta = @enc.encrypt_final
 
-        ts = Encoding::ASN1Encoder.instance(:sign_encrypt_cipher)
-        ts.set(:signer_config, smeta)
-        ts.set(:cipher_config, meta)
+        ts = BinStruct.instance.struct(:sign_encrypt_cipher)
+        ts.signer_config = smeta
+        ts.cipher_config = meta
+        ts.encoded
 
-        ts.to_asn1
+        #ts = Encoding::ASN1Encoder.instance(:sign_encrypt_cipher)
+        #ts.set(:signer_config, smeta)
+        #ts.set(:cipher_config, meta)
+
+        #ts.to_asn1
 
 
       end

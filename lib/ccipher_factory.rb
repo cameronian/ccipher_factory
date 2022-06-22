@@ -6,11 +6,17 @@ require 'tlogger'
 require 'toolrack'
 
 require 'ccrypto'
+require 'binenc'
 if TR::RTUtils.on_jruby?
   require 'ccrypto/java'
+  require 'binenc/java'
 else
   require 'ccrypto/ruby'
+  require 'binenc/ruby'
 end
+
+require_relative 'ccipher_factory/encoding/binenc_constant'
+require_relative 'ccipher_factory/encoding/bin_struct'
 
 require_relative 'ccipher_factory/encoding/asn1'
 
@@ -41,5 +47,4 @@ module CcipherFactory
 end
 
 MemBuf = Ccrypto::UtilFactory.instance(:membuf)
-#MemBuf = CcipherFactory::MemoryBuffer
 

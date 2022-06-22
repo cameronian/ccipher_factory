@@ -21,9 +21,9 @@ module CcipherFactory
 
       def verify_update_meta(meta)
 
-        ts = Encoding::ASN1Decoder.from_asn1(meta)
-        digestAlgo = Tag.constant_key(ts.value(:digest_algo))
-        @sign = ts.value(:signature)
+        ts = BinStruct.instance.struct_from_bin(meta)
+        digestAlgo = BTag.value_constant(ts.digest_algo)
+        @sign = ts.signature
 
         raise SymKeySignerError, "Verification key must be given" if is_empty?(@verification_key)
 
@@ -49,10 +49,14 @@ module CcipherFactory
 
         sign = @hmac.hmac_final
 
-        logger.tdebug :symkey_ver, "Generated : #{sign}"
-        logger.tdebug :symkey_ver, "Enveloped : #{@sign}"
+        res = (sign == @sign)
 
-        sign == @sign
+        if not res
+          logger.tdebug :symkey_ver, "Generated : #{sign}"
+          logger.tdebug :symkey_ver, "Enveloped : #{@sign}"
+        end
+
+        res
 
       end
 

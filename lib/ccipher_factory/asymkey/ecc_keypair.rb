@@ -1,6 +1,7 @@
 
 require_relative 'asymkey'
 
+
 module CcipherFactory
   module KeyPair
     class ECCKeyPair
@@ -17,25 +18,25 @@ module CcipherFactory
       end
 
       def to_signer_info
-        ts = Encoding::ASN1Encoder.instance(:ecc_signer_info)
-        ts.set(:signer_info_type, Tag.constant(:public_key))
-        ts.set(:signer_info_value, @keypair.public_key.to_bin)
-        ts.to_asn1
+        bs = BinStruct.instance.struct(:ecc_signer_info)
+        bs.signer_info_value = @keypair.public_key.to_bin
+        bs.encoded
       end
 
       def self.from_signer_info(bin)
-        ts = Encoding::ASN1Decoder.from_asn1(bin)
-        siType = ts.value(:signer_info_type)
-        val = ts.value(:signer_info_value)
-        case Tag.constant_key(siType)
+
+        bs = BinStruct.instance.struct(:ecc_signer_info)
+        ts = bs.from_bin(bin)
+        siType = ts.signer_info_type
+        val = ts.signer_info_value
+        case BTag.value_constant(siType)
         when :public_key
           Ccrypto::AlgoFactory.engine(Ccrypto::ECCPublicKey).to_key(val)
-          #OpenSSL::PKey::EC.new(val)
         else
-          raise AsymKeyError, "Unknown signer info type #{Tag.constant_key(siType)}"
+          raise AsymKeyError, "Unknown signer info type #{BTag.value_constant(siType)}"
         end
-      end
 
+      end
 
       def method_missing(mtd, *args, &block)
         logger.debug "sending method #{mtd} to #{@keypair}"

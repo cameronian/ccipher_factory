@@ -49,10 +49,10 @@ module CcipherFactory
 
         sign = @hmac.hmac_final
 
-        ts = Encoding::ASN1Encoder.instance(:symkey_signature)
-        ts.set(:digest_algo, Tag.constant(@digest_algo))
-        ts.set(:signature, sign)
-        ts.to_asn1
+        ts = BinStruct.instance.struct(:symkey_signature) 
+        ts.digest_algo = BTag.constant_value(@digest_algo)
+        ts.signature = sign
+        ts.encoded
 
       end
 

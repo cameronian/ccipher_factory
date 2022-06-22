@@ -54,15 +54,25 @@ module CcipherFactory
     def self.from_asn1(bin, &block)
       raise SymKeyError, "Input should not be empty" if is_empty?(bin)
 
-      ts = CcipherFactory::Encoding::ASN1Decoder.from_asn1(bin)
-      case ts.id
-      when :symkey_derived
+      ts = BinStruct.instance.struct_from_bin(bin)
+      case ts.oid
+      when BTag.constant_value(:symkey_derived)
         DerivedSymKey.from_tspec(ts, &block)
-      when :symkey
+      when BTag.constant_value(:symkey)
         SoftSymKey.from_tspec(ts, &block)
       else
-        raise SymKeyError, "Unknown symkey envelope '#{ts.id}'"
+        raise SymKeyError, "Unknown symkey envelope '#{ts.oid}'"
       end
+
+
+      #case ts.id
+      #when :symkey_derived
+      #  DerivedSymKey.from_tspec(ts, &block)
+      #when :symkey
+      #  SoftSymKey.from_tspec(ts, &block)
+      #else
+      #  raise SymKeyError, "Unknown symkey envelope '#{ts.id}'"
+      #end
 
     end
 

@@ -5,7 +5,6 @@ module CcipherFactory
   module Compression
     module ZlibDecompressor
       include CcipherFactory::Common
-      include Encoding::ASN1Decoder 
 
       def decompress_init(*args, &block)
 
@@ -22,10 +21,12 @@ module CcipherFactory
         if @decompressor.nil?
           begin
             intOutputBuf.write(val)
-            extract_meta(intOutputBuf) do |meta, bal|
-              ts = Encoding::ASN1Decoder.from_asn1(meta)
-              case ts.id
-              when :compression_zlib
+            Encoding.extract_meta(intOutputBuf) do |meta, bal|
+              ts = BinStruct.instance.struct_from_bin(meta)
+
+              #ts = Encoding::ASN1Decoder.from_asn1(meta)
+              case ts.oid
+              when BTag.constant_value(:compression_zlib)
                 @decompressor = Ccrypto::UtilFactory.instance(:decompression)
               else
                 raise DecompressionError, "Unknown compression type '#{ts.id}'"

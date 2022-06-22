@@ -3,7 +3,6 @@
 module CcipherFactory
   module SymKeyCipher
     module SymKeyAttDecrypt
-      include Encoding::ASN1Decoder
       include Common
 
       attr_accessor :key
@@ -26,7 +25,7 @@ module CcipherFactory
         if @dec.nil?
           intOutputBuf.write(val)
           begin
-            extract_meta(intOutputBuf) do |meta, bal|
+            Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
               @dec = SymKeyCipher.decryptor
               @dec.output(@output)

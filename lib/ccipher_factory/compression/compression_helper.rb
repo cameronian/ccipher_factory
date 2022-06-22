@@ -8,8 +8,8 @@ module CcipherFactory
 
       def decompressor_from_asn1(bin)
 
-        ts = Encoding::ASN1Decoder.from_asn1(bin)
-        case ts.id
+        ts = BinStruct.instance.struct_from_bin(bin)
+        case BTag.value_constant(ts.oid)
         when :compression_zlib
           compression_on
         when :compression_none
@@ -85,7 +85,8 @@ module CcipherFactory
       end
 
       def encode_null_compressor
-        Encoding::ASN1Encoder.instance(:compression_none).to_asn1
+        BinStruct.instance.struct(:compression_none).encoded
+        #Encoding::ASN1Encoder.instance(:compression_none).to_asn1
       end
 
       def logger

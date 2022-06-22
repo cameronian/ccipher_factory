@@ -25,32 +25,32 @@ module CcipherFactory
     end
 
     def self.from_asn1(bin, &block)
-      ts = Encoding::ASN1Decoder.from_asn1(bin)
+      ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
     end
 
     def self.from_tspec(ts, &block)
-      case ts.id
+      case BTag.value_constant(ts.oid)
       when :kdf_scrypt
         kdf = KDFEngine.new
         kdf.extend(Scrypt)
-        kdf.cost = ts.value(:cost)
-        kdf.parallel = ts.value(:parallel)
-        kdf.blocksize = ts.value(:blocksize)
-        kdf.salt = ts.value(:salt)
-        kdf.outByteLength = ts.value(:outByteLength)
-        kdf.digest = Digest.from_asn1(ts.value(:digest))
+        kdf.cost = ts.cost
+        kdf.parallel = ts.parallel
+        kdf.blocksize = ts.blocksize
+        kdf.salt = ts.salt
+        kdf.outByteLength = ts.outByteLength
+        kdf.digest = Digest.from_asn1(ts.digest)
         kdf.derive_init
         kdf
       when :kdf_hkdf
         kdf = KDFEngine.new
         kdf.extend(HKDF)
-        kdf.digestAlgo = Tag.constant_key(ts.value(:digest))
-        kdf.salt = ts.value(:salt)
-        kdf.outByteLength = ts.value(:outByteLength)
+        kdf.digestAlgo = BTag.value_constant(ts.digest)
+        kdf.salt = ts.salt
+        kdf.outByteLength = ts.outByteLength
         kdf.derive_init
       else
-        raise KDFError, "Unknown KDF envelope ID '#{ts.id}'"
+        raise KDFError, "Unknown KDF envelope ID '#{ts.oid}'"
       end
     end
 

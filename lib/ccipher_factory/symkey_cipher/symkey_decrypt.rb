@@ -6,7 +6,6 @@ module CcipherFactory
     module SymKeyDecrypt
       include TR::CondUtils
       include Common
-      include Encoding::ASN1Decoder
       include Compression::CompressionHelper
 
       #class SymKeyDecryptError < StandardError; end
@@ -35,15 +34,15 @@ module CcipherFactory
 
         intOutputBuf.write(val)
         begin
-          extract_meta(intOutputBuf) do |meta, bal|
+          Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
-            ts = Encoding::ASN1Decoder.from_asn1(meta)
-            @mode = Tag.constant_key(ts.value(:mode))
-            iv = ts.value(:iv)
-            comp = ts.value(:compression)
+            ts = BinStruct.instance.struct_from_bin(meta)
+            @mode = BTag.value_constant(ts.mode)
+            iv = ts.iv
+            comp = ts.compression
 
-            cts = Encoding::ASN1Decoder.from_asn1(comp)
-            if cts.id == :compression_zlib
+            cts = BinStruct.instance.struct_from_bin(comp)
+            if cts.oid == BTag.constant_value(:compression_zlib)
               @decompressor = CcipherFactory::Compression::Compressor.new
               @decompressor.decompress
               @decompressor.decompress_init
@@ -56,7 +55,7 @@ module CcipherFactory
               logger.tdebug :symkey_dec, "Compression is NOT active"
             end
 
-            authTag = ts.value(:auth_tag)
+            authTag = ts.auth_tag
 
             algoDef = SymKeyCipher.algo_default(@key.keytype)
 
@@ -66,15 +65,6 @@ module CcipherFactory
             cconf.iv = iv if not_empty?(iv)
             cconf.auth_tag = authTag if cconf.respond_to?(:auth_tag=)
             @cipher = Ccrypto::AlgoFactory.engine(cconf)
-
-            #spec = SymKeyCipher.key_to_spec(@key, @mode)
-            #logger.tdebug :symkey_dec, "Decrypt cipher spec : #{spec}"
-            #@cipher = OpenSSL::Cipher.new(spec)
-            #@cipher.decrypt
-            #@cipher.key = @key.key
-            #@cipher.iv = iv if not_empty?(iv)
-
-            #decrypt_update_cipher(bal) if bal.length > 0
 
             @cipher
 

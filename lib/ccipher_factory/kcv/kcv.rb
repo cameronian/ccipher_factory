@@ -13,12 +13,12 @@ module CcipherFactory
 
     def self.from_asn1(bin) 
 
-      ts = Encoding::ASN1Decoder.from_asn1(bin)
+      ts = BinStruct.instance.struct_from_bin(bin)
       kcv = KCV.new
-      kcv.mode = Tag.constant_key(ts.value(:mode))
-      kcv.iv = ts.value(:iv)
-      kcv.nonce = ts.value(:nonce)
-      kcv.check_value = ts.value(:check_value)
+      kcv.mode = BTag.constant_value(ts.mode)
+      kcv.iv = ts.iv
+      kcv.nonce = ts.nonce
+      kcv.check_value = ts.check_value
 
       kcv
 
@@ -58,11 +58,13 @@ module CcipherFactory
       encrypt_update(@nonce)
       encrypt_final
 
-      ts = Encoding::ASN1Encoder.instance(:kcv)
-      ts.set(:mode, Tag.constant(@mode))
-      ts.set(:iv, @iv)
-      ts.set(:nonce, @nonce)
-      ts.set(:check_value, intOutputBuf.bytes)
+      ts = BinStruct.instance.struct(:kcv)
+      ts.mode = BTag.constant_value(@mode)
+      ts.iv = @iv
+      ts.nonce = @nonce
+      ts.check_value = intOutputBuf.bytes
+      
+      ts.encoded
 
       #logger.debug "Key : #{self.class.converter.to_hex(@key.key)}"
       #logger.debug "mode #{@mode}"
@@ -70,7 +72,7 @@ module CcipherFactory
       #logger.debug "nounce #{self.class.converter.to_hex(@nonce)}"
       #logger.debug "check_value #{self.class.converter.to_hex(intOutputBuf.string)}"
 
-      ts.to_asn1
+      #ts.to_asn1
 
     end
 

@@ -77,5 +77,9 @@ RSpec.describe CcipherFactory::Digest do
 
   end
 
+  it 'create digest for user given value' do
+    
+  end
+
 
 end

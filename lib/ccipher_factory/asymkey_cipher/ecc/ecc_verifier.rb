@@ -21,10 +21,10 @@ module CcipherFactory
 
       def verify_update_meta(meta)
 
-        ts = Encoding::ASN1Decoder.from_asn1(meta)
-        digInfo = ts.value(:digest_info)
-        sigInfo = ts.value(:signer_info)
-        @sign = ts.value(:signature)
+        ts = BinStruct.instance.struct_from_bin(meta)
+        digInfo = ts.digest_info
+        sigInfo = ts.signer_info
+        @sign = ts.signature
 
         @digest = Digest.from_asn1(digInfo)
         @digest.output(intOutputBuf)

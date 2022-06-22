@@ -18,24 +18,45 @@ module CcipherFactory
     end
 
     def self.from_asn1(bin, &block)
-      ts = Encoding::ASN1Decoder.from_asn1(bin)
+      ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
     end
 
     def self.from_tspec(ts, &block)
 
-      if ts.id == :digest_attached
-        dig = from_asn1(ts.value(:digest_config))
-        dig.digestVal = ts.value(:digest_value)
+      if ts.oid == BTag.constant_value(:digest_attached)
+        dig = from_asn1(ts.digest_config)
+        dig.digestVal = ts.digest_value
         dig
       else
 
-        algo = Tag.constant_key(ts.value(:digest_algo))
+        algo = BTag.value_constant(ts.digest_algo)
         logger.debug "from_asn1 algo : #{algo}"
         dig = instance
-        dig.salt = ts.value(:salt)
-        dig.digest_init(algo, &block)
+        dig.salt = ts.salt
+        dig.digest_init(algo, dig.salt, &block)
       end
+    end
+
+    def self.parse(bin, &block)
+     
+      res = {  }
+      ts = BinStruct.instance.struct_from_bin(bin)
+      res[:type] = BTag.value_constant(ts.oid)
+
+      if res[:type] == :digest_attached
+        #conf = Encoding::ASN1Decoder.from_asn1(ts.value(:digest_config))
+        conf = BinStruct.instance.struct_from_bin(ts.digest_config)
+        res[:algo] = BTag.value_constant(conf.digest_algo)
+        res[:salt] = conf.salt
+        #res[:algo] = Tag.constant_key(conf.value(:digest_algo)) 
+        #res[:salt] = conf.value(:salt)
+      end
+
+      res[:digest] = ts.digest_value
+
+      res
+
     end
 
     def self.logger
@@ -52,6 +73,8 @@ module CcipherFactory
     attr_accessor :algo, :salt, :digestVal
     def digest_init(*args, &block)
 
+      logger.debug "args : #{args}"
+
       @algo = args.first
       @algo = SupportedDigest.instance.default_digest if is_empty?(@algo)
       raise DigestError, "Given digest '#{@algo}' is not supported.\nPossible digest algo including: #{SupportedDigest.instance.supported.join(", ")}" if not SupportedDigest.instance.is_supported?(@algo)
@@ -64,16 +87,18 @@ module CcipherFactory
 
       salt = args[1]
       if not_empty?(salt)
+        logger.debug "Salt given #{salt} / #{salt.length}"
+
         case salt
         when :random_salt, :random
           saltLen = args[2] || 16
-          sre = Ccrypto::AlgoFactorye.engine(Ccrypto::SecureRandomEngine)
-          @salt = sre.random_bytes(16)
-          @digest.update(@salt)
+          sre = Ccrypto::AlgoFactory.engine(Ccrypto::SecureRandomConfig)
+          @salt = sre.random_bytes(saltLen)
+          @digest.digest_update(@salt)
         else
           if salt.is_a?(String)
             @salt = salt
-            @digest.update(@salt)
+            @digest.digest_update(@salt)
           else
             raise DigestError, "Unknown option '#{salt}' for salt"
           end
@@ -103,21 +128,23 @@ module CcipherFactory
 
       write_to_output(@digestVal)
 
-      ts = Encoding::ASN1Encoder.instance(:digest)
-      ts.set(:digest_algo, Tag.constant(@algo))
+      #ts = Encoding::ASN1Encoder.instance(:digest)
+      ts = BinStruct.instance.struct(:digest)
+      ts.digest_algo = BTag.constant_value(@algo)
       if not_empty?(@salt)
-        ts.set(:salt, @salt)
+        ts.salt = @salt
       else
-        ts.set(:salt, "")
+        ts.salt = ""
       end
 
       if is_attach_mode?
-        tsd = Encoding::ASN1Encoder.instance(:digest_attached)
-        tsd.set(:digest_config, ts.to_asn1)
-        tsd.set(:digest_value, @digestVal)
-        res = tsd.to_asn1
+        tsd = BinStruct.instance.struct(:digest_attached)
+        #tsd = Encoding::ASN1Encoder.instance(:digest_attached)
+        tsd.digest_config = ts.encoded
+        tsd.digest_value = @digestVal
+        res = tsd.encoded
       else
-        res = ts.to_asn1
+        res = ts.encoded
       end
 
       res

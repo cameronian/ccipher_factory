@@ -45,17 +45,18 @@ module CcipherFactory
 
         meta = @signer.sign_final
 
-        ts = Encoding::ASN1Encoder.instance(:symkey_att_sign)
-        ts.set(:symkey_signature, meta)
+        #ts = Encoding::ASN1Encoder.instance(:symkey_att_sign)
+        ts = BinStruct.instance.struct(:symkey_att_sign)
+        ts.symkey_signature = meta
 
         if is_compression_on?
           compRes = compressor.compress_final
-          ts.set(:compression, compRes)
+          ts.compression = compRes
         else
-          ts.set(:compression, encode_null_compressor)
+          ts.compression = encode_null_compressor
         end
 
-        attMeta = ts.to_asn1
+        attMeta = ts.encoded
 
         write_to_output(attMeta)
         intOutputFile.rewind

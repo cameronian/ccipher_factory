@@ -46,15 +46,21 @@ module CcipherFactory
       def att_sign_final
         meta = @signer.sign_final 
 
-        ts = Encoding::ASN1Encoder.instance(:ecc_att_sign)
-        ts.set(:ecc_signature, meta)
+        #ts = Encoding::ASN1Encoder.instance(:ecc_att_sign)
+        ts = BinStruct.instance.struct(:ecc_att_sign)
+        ts.ecc_signature = meta
+
+        #ts.set(:ecc_signature, meta)
         if is_compression_on?
-          ts.set(:compression, compressor.compress_final)
+          #ts.set(:compression, compressor.compress_final)
+          ts.compression = compressor.compress_final
         else
-          ts.set(:compression, encode_null_compressor)
+          #ts.set(:compression, encode_null_compressor)
+          ts.compression = encode_null_compressor
         end
 
-        smeta = ts.to_asn1
+        #smeta = ts.to_asn1
+        smeta = ts.encoded
         write_to_output(smeta)
 
         intOutputFile.rewind

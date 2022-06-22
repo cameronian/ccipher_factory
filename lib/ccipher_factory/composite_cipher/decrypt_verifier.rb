@@ -8,7 +8,6 @@ module CcipherFactory
     module DecryptVerifier
       include TR::CondUtils
       include Common
-      include Encoding::ASN1Decoder
       include TloggerHelper
 
       attr_accessor :decryption_key, :verification_key
@@ -35,15 +34,20 @@ module CcipherFactory
 
         begin
 
-          extract_meta(intOutputBuf) do |meta, bal|
+          Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
-            ts = Encoding::ASN1Decoder.from_asn1(meta)
-            ccBin = ts.value(:cipher_config)
-            cc = Encoding::ASN1Decoder.from_asn1(ccBin)
-            scBin = ts.value(:signer_config)
-            sc = Encoding::ASN1Decoder.from_asn1(scBin)
+            #ts = Encoding::ASN1Decoder.from_asn1(meta)
+            ts = BinStruct.instance.struct_from_bin(meta)
+            ccBin = ts.cipher_config
+            cc = BinStruct.instance.struct_from_bin(ccBin)
+            scBin = ts.signer_config
+            sc = BinStruct.instance.struct_from_bin(scBin)
+            #ccBin = ts.value(:cipher_config)
+            #cc = Encoding::ASN1Decoder.from_asn1(ccBin)
+            #scBin = ts.value(:signer_config)
+            #sc = Encoding::ASN1Decoder.from_asn1(scBin)
 
-            case cc.id
+            case BTag.value_constant(cc.oid)
             when :symkey_cipher
               @cipher = CcipherFactory::SymKeyCipher.decryptor
               @cipher.output(intOutputFile)
@@ -60,7 +64,7 @@ module CcipherFactory
               raise CompositeCipherError, "Unknown envelope type '#{cc.id}'"
             end
 
-            case sc.id
+            case BTag.value_constant(sc.oid)
             when :ecc_att_sign
               @verifier = AsymKeySigner.att_verifier
               @verifier.output(@output)

@@ -69,14 +69,23 @@ module CcipherFactory
 
         write_to_output(@derivedVal) if is_output_given?
 
-        ts = Encoding::ASN1Encoder.instance(:kdf_scrypt)
-        ts.set(:digest, digMeta)
-        ts.set(:salt, @salt)
-        ts.set(:cost, @cost)
-        ts.set(:blocksize, @blocksize)
-        ts.set(:parallel, @parallel)
-        ts.set(:outByteLength, @outByteLength)
-        ts.to_asn1 
+        #ts = Encoding::ASN1Encoder.instance(:kdf_scrypt)
+        #ts.set(:digest, digMeta)
+        #ts.set(:salt, @salt)
+        #ts.set(:cost, @cost)
+        #ts.set(:blocksize, @blocksize)
+        #ts.set(:parallel, @parallel)
+        #ts.set(:outByteLength, @outByteLength)
+        #ts.to_asn1 
+
+        ts = BinStruct.instance.struct(:kdf_scrypt) 
+        ts.digest = digMeta
+        ts.salt = @salt
+        ts.cost = @cost
+        ts.blocksize = @blocksize
+        ts.parallel = @parallel
+        ts.outByteLength = @outByteLength
+        ts.encoded
 
       end
 
