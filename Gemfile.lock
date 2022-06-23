@@ -8,11 +8,11 @@ GIT
       toolrack
 
 GIT
-  remote: binenc-ruby
-  revision: 099b4f08d3f862319671cda963bc86f6d0202e1a
+  remote: binenc-java
+  revision: 8ee965e21da1bf1cebb5b4068b798b715eff6968
   branch: master
   specs:
-    binenc-ruby (0.1.0)
+    binenc-java (0.1.0)
       teLogger
       toolrack
 
@@ -26,13 +26,11 @@ GIT
       toolrack
 
 GIT
-  remote: ccrypto-ruby
-  revision: 1e3319717ddf527eb833bcf4bb966a41b4fee685
+  remote: ccrypto-java
+  revision: fa86a03c24b704d3a162d42a5c19f06893b05cef
   branch: main
   specs:
-    ccrypto-ruby (0.1.0)
-      teLogger
-      toolrack
+    ccrypto-java (0.1.0)
 
 PATH
   remote: .
@@ -66,16 +64,16 @@ GEM
       tlogger
 
 PLATFORMS
-  x86_64-linux
+  universal-java-11
 
 DEPENDENCIES
   binenc!
-  binenc-ruby!
+  binenc-java!
   ccipher_factory!
   ccrypto!
-  ccrypto-ruby!
+  ccrypto-java!
   rake (~> 13.0)
   rspec (~> 3.0)
 
 BUNDLED WITH
-   2.2.28
+   2.3.6

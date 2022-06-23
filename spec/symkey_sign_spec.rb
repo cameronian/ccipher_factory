@@ -61,7 +61,6 @@ RSpec.describe CcipherFactory::SymKeySigner do
         ver.verify_update_data(data)
         res = ver.verify_final
 
-        p res
         expect(res).to be true
 
         if not @prevKey.nil?
@@ -72,7 +71,6 @@ RSpec.describe CcipherFactory::SymKeySigner do
           ver.verify_update_data(data)
           res = ver.verify_final
 
-          p res
           expect(res).to be false
         end
 

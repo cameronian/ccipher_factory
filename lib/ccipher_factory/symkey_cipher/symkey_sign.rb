@@ -22,7 +22,7 @@ module CcipherFactory
         raise SymKeySignerError, "Given digest algo is not supported" if not Digest::SupportedDigest.instance.is_supported?(@digest_algo)
 
         hconf = Ccrypto::HMACConfig.new
-        hconf.key = Ccrypto::SecretKey.new(:aes, @signing_key.key)
+        hconf.key = Ccrypto::SecretKey.new(@signing_key.keytype, @signing_key.key)
         hconf.digest = @digest_algo
 
         @hmac = Ccrypto::AlgoFactory.engine(hconf)
