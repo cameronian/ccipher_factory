@@ -26,6 +26,7 @@ module CcipherFactory
       end
       @logger
     end
+
     def structure(ver = "1.0")
       
       if @struct.nil?
@@ -114,6 +115,17 @@ module CcipherFactory
             int :parallel
             int :outByteLength
           end,
+
+
+          kdf_pbkdf2: Binenc::EngineFactory.instance(:bin_struct).define do
+            oid :oid, BTag.constant_value(:kdf_pbkdf2)
+            int :version, 0x0100
+            int :digest
+            bin :salt
+            int :iterations
+            int :outByteLength
+          end,
+
 
           shared_secret: Binenc::EngineFactory.instance(:bin_struct).define do
             oid :oid, BTag.constant_value(:shared_secret)

@@ -9,6 +9,7 @@ BTag.load do
     define_constant(:kdf, "#.10") do
       define_constant(:kdf_scrypt, "#.0")
       define_constant(:kdf_hkdf, "#.1")
+      define_constant(:kdf_pbkdf2, "#.2")
     end
 
     define_constant(:digest, "#.20")

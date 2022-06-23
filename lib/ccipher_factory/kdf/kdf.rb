@@ -1,6 +1,7 @@
 
 require_relative 'scrypt'
 require_relative 'hkdf'
+require_relative 'pbkdf2'
 
 module CcipherFactory
   module KDF
@@ -17,6 +18,8 @@ module CcipherFactory
         kdf.extend(Scrypt)
       when :hkdf
         kdf.extend(HKDF)
+      when :pbkdf2
+        kdf.extend(PBKDF2)
       else
         raise KDFError, "Unknown KDF engine '#{eng}'"
       end
@@ -47,6 +50,14 @@ module CcipherFactory
         kdf.extend(HKDF)
         kdf.digestAlgo = BTag.value_constant(ts.digest)
         kdf.salt = ts.salt
+        kdf.outByteLength = ts.outByteLength
+        kdf.derive_init
+      when :kdf_pbkdf2
+        kdf = KDFEngine.new
+        kdf.extend(PBKDF2)
+        kdf.digestAlgo = BTag.value_constant(ts.digest)
+        kdf.salt = ts.salt
+        kdf.iter = ts.iterations
         kdf.outByteLength = ts.outByteLength
         kdf.derive_init
       else
