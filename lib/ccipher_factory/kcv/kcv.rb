@@ -35,7 +35,9 @@ module CcipherFactory
       logger.tdebug :kcv_match, "Check if KCV matched"
       to_asn1
       res = intOutputBuf.bytes
-      @check_value == res
+      comp = Ccrypto::UtilFactory.instance(:comparator)
+      comp.is_equal?(@check_value, res)
+      #@check_value == res
     end
 
     def to_asn1

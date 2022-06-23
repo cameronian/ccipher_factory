@@ -51,6 +51,12 @@ module CcipherFactory
       GC.start
     end
 
+    def is_equals?(key)
+      puts "called"
+      comp = Ccrypto::UtilFactory.instance(:comparator)
+      comp.is_equal?(@key, key)
+    end
+
     def self.from_asn1(bin, &block)
       raise SymKeyError, "Input should not be empty" if is_empty?(bin)
 

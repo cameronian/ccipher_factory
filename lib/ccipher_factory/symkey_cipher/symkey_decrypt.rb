@@ -69,7 +69,7 @@ module CcipherFactory
             @cipher
 
           end
-        rescue InsufficientData => e
+        rescue Encoding::InsufficientData => e
         end
 
 

@@ -59,7 +59,7 @@ module CcipherFactory
               disposeOutput(intOutputBuf)
 
             end
-          rescue InsufficientData
+          rescue Encoding::InsufficientData
           end
 
         else

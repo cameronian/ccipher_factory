@@ -59,7 +59,7 @@ module CcipherFactory
               intOutputBuf.rewind
               intOutputBuf = nil
             end
-          rescue InsufficientData
+          rescue Encoding::InsufficientData
           end
         else
           res = decompress_data_if_active(val)

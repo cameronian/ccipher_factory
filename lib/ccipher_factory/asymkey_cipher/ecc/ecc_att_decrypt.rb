@@ -36,7 +36,7 @@ module CcipherFactory
               intOutputBuf = nil
 
             end
-          rescue InsufficientData => e
+          rescue Encoding::InsufficientData => e
           end
 
         else

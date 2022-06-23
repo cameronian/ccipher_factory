@@ -156,7 +156,8 @@ RSpec.describe CcipherFactory::SymKeyCipher do
             skBin = sk.to_asn1
             rsk2 = CcipherFactory::SoftSymKey.from_asn1(skBin)
 
-            expect(rsk2.key == sk.key.to_bin).to be true
+            #expect(rsk2.key == sk.key.to_bin).to be true
+            expect(rsk2.is_equals?(sk.key.to_bin)).to be true
 
             dec3 = subject.decryptor
             expect(dec3).not_to be_nil

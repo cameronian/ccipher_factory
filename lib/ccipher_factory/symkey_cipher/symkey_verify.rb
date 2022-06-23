@@ -49,7 +49,9 @@ module CcipherFactory
 
         sign = @hmac.hmac_final
 
-        res = (sign == @sign)
+        comp = Ccrypto::UtilFactory.instance(:comparator)
+        res = comp.is_equal?(sign, @sign)
+        #res = (sign == @sign)
 
         if not res
           logger.tdebug :symkey_ver, "Generated : #{sign}"

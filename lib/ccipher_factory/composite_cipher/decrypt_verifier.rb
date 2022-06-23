@@ -83,7 +83,7 @@ module CcipherFactory
 
           end
 
-        rescue InsufficientData
+        rescue Encoding::InsufficientData
         end
 
 

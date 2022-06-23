@@ -157,6 +157,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
         expect(rsk2.keytype == sk.keytype).to be true
         expect(rsk2.keysize == sk.keysize).to be true
         expect(rsk2.key).not_to be_empty
+        p sk.key.class
         #expect(rsk2.key == sk.key).to be true
         expect(sk.key.equals?(rsk2.key)).to be true
 

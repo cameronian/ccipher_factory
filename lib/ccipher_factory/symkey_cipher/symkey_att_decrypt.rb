@@ -39,7 +39,7 @@ module CcipherFactory
               disposeOutput(intOutputBuf)
 
             end
-          rescue InsufficientData => e
+          rescue Encoding::InsufficientData => e
           end
         else
           logger.tdebug :att_dec, "Updating cipher size #{val.length}"

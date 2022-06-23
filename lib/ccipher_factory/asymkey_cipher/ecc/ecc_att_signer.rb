@@ -59,7 +59,6 @@ module CcipherFactory
           ts.compression = encode_null_compressor
         end
 
-        #smeta = ts.to_asn1
         smeta = ts.encoded
         write_to_output(smeta)
 

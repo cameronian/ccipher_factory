@@ -34,7 +34,7 @@ module CcipherFactory
 
               decompress_update(bal)
             end
-          rescue InsufficientData => e
+          rescue Encoding::InsufficientData => e
           end
         else
           decompress_update(val)

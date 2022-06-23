@@ -66,7 +66,6 @@ GEM
       tlogger
 
 PLATFORMS
-  universal-java-11
   x86_64-linux
 
 DEPENDENCIES
@@ -79,4 +78,4 @@ DEPENDENCIES
   rspec (~> 3.0)
 
 BUNDLED WITH
-   2.3.6
+   2.2.28

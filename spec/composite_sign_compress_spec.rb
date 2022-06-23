@@ -35,7 +35,6 @@ RSpec.describe CcipherFactory::CompositeCipher do
         cv.decrypt_verify_update_cipher(out.bytes)
         res = cv.decrypt_verify_final
 
-        p res
         expect(res).to be true
         expect(dout.equals?(data)).to be true
         #expect(cv.embedded_signer.to_der == ask.public_key.public_key.to_der).to be true
@@ -81,7 +80,6 @@ RSpec.describe CcipherFactory::CompositeCipher do
         cv.decrypt_verify_update_cipher(out.bytes)
         res = cv.decrypt_verify_final   
 
-        p res
         expect(res).to be true
         expect(dout.equals?(data)).to be true
       end
