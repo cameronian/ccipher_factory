@@ -102,7 +102,6 @@ module CcipherFactory
         ts.digest = BTag.constant_value(digestId)
         ts.salt = @salt
         ts.outByteLength = @outByteLength
-        p ts
         ts.encoded
 
       end
