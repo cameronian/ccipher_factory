@@ -92,12 +92,6 @@ module CcipherFactory
 
         write_to_output(@derivedVal) if is_output_given?
 
-        #ts = Encoding::ASN1Encoder.instance(:kdf_hkdf)
-        #ts.set(:digest, Tag.constant(digestId))
-        #ts.set(:salt, @salt)
-        #ts.set(:outByteLength, @outByteLength)
-        #ts.to_asn1 
-
         ts = BinStruct.instance.struct(:kdf_hkdf)
         ts.digest = BTag.constant_value(digestId)
         ts.salt = @salt

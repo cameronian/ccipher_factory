@@ -20,20 +20,12 @@ module CcipherFactory
       serial = rand.random_bytes(8)
       shares = ss.split(data)
       shares = shares.map { |s| 
-        #ts = Encoding::ASN1Encoder.instance(:shared_secret)
         ts = BinStruct.instance.struct(:shared_secret)
         ts.req_share = reqShare
         ts.share_id = s[0]
         ts.serial = serial
         ts.shared_value = s[1]
         ts.encoded
-
-        #ts.set(:req_share, reqShare)
-        #ts.set(:share_id, s[0])
-        #ts.set(:serial, serial)
-        ##sbin = share[1].map { |v| v.chr }.join
-        #ts.set(:shared_value, s[1]) 
-        #ts.to_asn1
       }
 
       #shares = []

@@ -148,53 +148,9 @@ module CcipherFactory
 
         ts.encoded
 
-
-        #ts = Encoding::ASN1Encoder.instance(:symkey_cipher)
-        #if is_empty?(@mode)
-        #  ts.set(:mode, 0)
-        #  logger.debug "Encoding null mode"
-        #else
-        #  ts.set(:mode, Tag.constant(@mode))
-        #  logger.debug "Encoding mode #{@mode}"
-        #end
-
-        #if is_empty?(@iv)
-        #  ts.set(:iv, "")
-        #  logger.debug "Encoding empty IV"
-        #else
-        #  ts.set(:iv, @iv)
-        #  logger.debug "Encoding IV of #{@iv.length} bytes"
-        #end
-
-        #if is_compression_on?
-        #  ts.set(:compression, compressor.compress_final)
-        #  logger.tdebug :symkey_enc, "Plain : #{@totalPlain} / Compressed : #{@totalCompressed} = #{(@totalCompressed*1.0)/@totalPlain*100} %"
-        #else
-        #  ts.set(:compression, Encoding::ASN1Encoder.instance(:compression_none).to_asn1)
-        #end
-
-        #if @cconf.respond_to?(:auth_tag)
-        #  if is_empty?(@cconf.auth_tag)
-        #    ts.set(:auth_tag, "")
-        #    logger.debug "Encoding empty AuthTag"
-        #  else
-        #    ts.set(:auth_tag, @cconf.auth_tag)
-        #    logger.debug "Encoding AuthTag of #{@cconf.auth_tag.length}"
-        #  end
-        #else
-        #  ts.set(:auth_tag, "")
-        #  logger.debug "AuthTag not relevent"
-        #end
-
-        #ts.to_asn1
-
       end
 
       private
-      #def is_gcm_mode?
-      #  @mode == :gcm
-      #end
-
       def logger
         if @logger.nil?
           @logger = Tlogger.new

@@ -74,7 +74,7 @@ module CcipherFactory
 
     end
 
-    def to_asn1
+    def encoded
 
       ts = BinStruct.instance.struct(:symkey_derived)
       ts.keytype = BTag.constant_value(@keytype)
@@ -83,25 +83,13 @@ module CcipherFactory
       if @passVer == true
         kcv = KCV.new
         kcv.key = self
-        ts.kcv = kcv.to_asn1
+        ts.kcv = kcv.encoded
       else
         ts.kcv = ""
         #ts.set(:kcv, "")
       end
       ts.encoded
 
-      #ts = Encoding::ASN1Encoder.instance(:symkey_derived)
-      #ts.set(:keytype, Tag.constant(@keytype))
-      #ts.set(:keysize, @keysize)
-      #ts.set(:kdf_config, @kdfAsn1)
-      #if @passVer == true
-      #  kcv = KCV.new
-      #  kcv.key = self
-      #  ts.set(:kcv, kcv.to_asn1)
-      #else
-      #  ts.set(:kcv, "")
-      #end
-      #ts.to_asn1
     end
 
     def logger

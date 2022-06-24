@@ -41,7 +41,7 @@ module CcipherFactory
       super(keytype, keysize, key)
     end
 
-    def to_asn1
+    def encoded
       ts = BinStruct.instance.struct(:symkey)
       ts.keytype = BTag.constant_value(@keytype)
       ts.keysize = @keysize
@@ -57,20 +57,6 @@ module CcipherFactory
       end
       ts.encoded
 
-      #ts = Encoding::ASN1Encoder.instance(:symkey)
-      #ts.set(:keytype, Tag.constant(@keytype))
-      #ts.set(:keysize, @keysize)
-      #if is_attach_mode? 
-      #  case @key
-      #  when String
-      #    ts.set(:key, @key)
-      #  else
-      #    ts.set(:key, @key.to_bin)
-      #  end
-      #else
-      #  ts.set(:key, "")
-      #end
-      #ts.to_asn1
     end
 
   end

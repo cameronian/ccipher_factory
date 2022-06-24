@@ -8,8 +8,11 @@ RSpec.describe CcipherFactory::SymKeyCipher do
    
     data = "Super secret data!"
 
+    comp = Ccrypto::UtilFactory.instance(:comparator)
+
     sk = CcipherFactory::SymKeyGenerator.generate(:aes, 256)
     c = subject.att_encryptor
+    c.mode = :gcm
     encBuf = MemBuf.new
     c.output(encBuf)
     c.key = sk
@@ -18,11 +21,13 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     c.att_encrypt_final
 
     sk.attach_mode
-    skBin = sk.to_asn1
+    skBin = sk.encoded
 
     expect(encBuf.bytes.length > 0).to be true
 
     rsk = CcipherFactory::SoftSymKey.from_asn1(skBin)
+    rskc = CcipherFactory::SymKey.from_asn1(skBin)
+    expect(comp.is_equals?(rsk.key, rskc.key)).to be true
     dc = subject.att_decryptor
     decBuf = MemBuf.new
     dc.output(decBuf)
@@ -51,7 +56,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     c.att_encrypt_final
 
     sk.attach_mode
-    skBin = sk.to_asn1
+    skBin = sk.encoded
 
     expect(encBuf.bytes.length > 0).to be true
 
@@ -91,7 +96,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     c.att_encrypt_update(data)
     c.att_encrypt_final
 
-    skBin = sk.to_asn1
+    skBin = sk.encoded
 
     expect(encBuf.bytes.length > 0).to be true
 
@@ -132,7 +137,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     #expect(decBuf.string != data).to be true
 
     sk.activate_password_verifier
-    skBin = sk.to_asn1
+    skBin = sk.encoded
 
     expect {
       CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
@@ -168,7 +173,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     c.att_encrypt_update(data)
     c.att_encrypt_final
 
-    skBin = sk.to_asn1
+    skBin = sk.encoded
 
     expect(encBuf.bytes.length > 0).to be true
 
@@ -209,7 +214,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     }.to raise_exception(CcipherFactory::SymKeyDecryptionError)
 
     sk.activate_password_verifier
-    skBin = sk.to_asn1
+    skBin = sk.encoded
 
     expect {
       CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|

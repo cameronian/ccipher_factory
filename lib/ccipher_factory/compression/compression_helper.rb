@@ -86,7 +86,6 @@ module CcipherFactory
 
       def encode_null_compressor
         BinStruct.instance.struct(:compression_none).encoded
-        #Encoding::ASN1Encoder.instance(:compression_none).to_asn1
       end
 
       def logger

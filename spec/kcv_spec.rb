@@ -14,7 +14,7 @@ RSpec.describe CcipherFactory::KCV do
     kcv = subject
     kcv.key = key
 
-    kcvBin = kcv.to_asn1
+    kcvBin = kcv.encoded
 
     rkcv = subject.class.from_asn1(kcvBin)
     rkcv.key = key

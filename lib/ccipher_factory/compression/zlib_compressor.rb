@@ -30,9 +30,6 @@ module CcipherFactory
       def compress_final
         @compressor.final
 
-        #ts = Encoding::ASN1Encoder.instance(:compression_zlib)
-        #ts.to_asn1
-
         ts = BinStruct.instance.struct(:compression_zlib)
         ts.encoded
       end

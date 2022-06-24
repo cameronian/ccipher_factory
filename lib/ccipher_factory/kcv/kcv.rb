@@ -33,14 +33,14 @@ module CcipherFactory
 
     def is_matched?
       logger.tdebug :kcv_match, "Check if KCV matched"
-      to_asn1
+      encoded
       res = intOutputBuf.bytes
       comp = Ccrypto::UtilFactory.instance(:comparator)
       comp.is_equal?(@check_value, res)
       #@check_value == res
     end
 
-    def to_asn1
+    def encoded
 
       raise KCVError, "Key must be given" if is_empty?(@key)
 
@@ -67,14 +67,6 @@ module CcipherFactory
       ts.check_value = intOutputBuf.bytes
       
       ts.encoded
-
-      #logger.debug "Key : #{self.class.converter.to_hex(@key.key)}"
-      #logger.debug "mode #{@mode}"
-      #logger.debug "IV #{self.class.converter.to_hex(@iv)}"
-      #logger.debug "nounce #{self.class.converter.to_hex(@nonce)}"
-      #logger.debug "check_value #{self.class.converter.to_hex(intOutputBuf.string)}"
-
-      #ts.to_asn1
 
     end
 

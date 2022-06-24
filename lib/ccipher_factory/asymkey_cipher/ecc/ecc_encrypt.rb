@@ -83,14 +83,8 @@ module CcipherFactory
         ts = BinStruct.instance.struct(:ecc_cipher)
         ts.sender_public = @sender_keypair.public_key.to_bin
         ts.cipher_config = cipherConfig
-        ts.key_config = @sessKey.to_asn1
+        ts.key_config = @sessKey.encoded
         ts.encoded
-
-        #ts = Encoding::ASN1Encoder.instance(:ecc_cipher)
-        #ts.set(:sender_public, @sender_keypair.public_key.to_bin)
-        #ts.set(:cipher_config, cipherConfig)
-        #ts.set(:key_config, @sessKey.to_asn1) 
-        #ts.to_asn1
 
       end
 

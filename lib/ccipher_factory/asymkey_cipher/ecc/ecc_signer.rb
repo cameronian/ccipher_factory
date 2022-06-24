@@ -59,20 +59,11 @@ module CcipherFactory
         eccEng = Ccrypto::AlgoFactory.engine(eccConf)
         sign = eccEng.sign(intOutputBuf.bytes)
 
-        #sign = @signing_key.dsa_sign_asn1(intOutputBuf.string)
-
         ts = BinStruct.instance.struct(:ecc_signature)
         ts.digest_info = dig
         ts.signer_info = @signing_key.to_signer_info
         ts.signature = sign
         ts.encoded
-        #ts = Encoding::ASN1Encoder.instance(:ecc_signature)
-        #ts.set(:digest_info, dig)
-        ## todo strengthen this with x.509 certificate?
-        ## Or put certificate outside of envelope?
-        #ts.set(:signer_info, @signing_key.to_signer_info)
-        #ts.set(:signature, sign)
-        #ts.to_asn1
 
       end
 

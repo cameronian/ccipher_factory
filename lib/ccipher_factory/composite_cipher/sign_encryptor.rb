@@ -91,13 +91,6 @@ module CcipherFactory
         ts.cipher_config = meta
         ts.encoded
 
-        #ts = Encoding::ASN1Encoder.instance(:sign_encrypt_cipher)
-        #ts.set(:signer_config, smeta)
-        #ts.set(:cipher_config, meta)
-
-        #ts.to_asn1
-
-
       end
 
     end
