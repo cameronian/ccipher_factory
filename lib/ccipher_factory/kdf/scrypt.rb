@@ -65,18 +65,9 @@ module CcipherFactory
 
         @derivedVal = scrypt.derive(intOutputBuf.bytes)
 
-        #@derivedVal = OpenSSL::KDF.scrypt(intOutputBuf.string, salt: @salt, N: @cost, r: @blocksize, p: @parallel, length: @outByteLength)
-
-        write_to_output(@derivedVal) if is_output_given?
-
-        #ts = Encoding::ASN1Encoder.instance(:kdf_scrypt)
-        #ts.set(:digest, digMeta)
-        #ts.set(:salt, @salt)
-        #ts.set(:cost, @cost)
-        #ts.set(:blocksize, @blocksize)
-        #ts.set(:parallel, @parallel)
-        #ts.set(:outByteLength, @outByteLength)
-        #ts.to_asn1 
+        if is_output_given?
+          write_to_output(@derivedVal)
+        end
 
         ts = BinStruct.instance.struct(:kdf_scrypt) 
         ts.digest = digMeta
@@ -87,6 +78,16 @@ module CcipherFactory
         ts.outByteLength = @outByteLength
         ts.encoded
 
+      end
+
+      private
+      def logger
+        if @logger.nil?
+          @logger = TeLogger::Tlogger.new
+          @logger.tag = :scrypt
+        end
+        
+        @logger
       end
 
 

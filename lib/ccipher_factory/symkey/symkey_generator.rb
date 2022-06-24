@@ -12,12 +12,21 @@ module CcipherFactory
     class SymKeyGeneratorError < StandardError; end
 
     def self.supported_symkey
-      { aes: [[128, 256], [:gcm, :cbc, :cfb, :ctr, :ofb]], 
-        chacha20: [[256],[:poly1305]], 
-        blowfish: [[128],[:cbc, :cfb, :ecb, :ofb]],
-        camellia: [[128,192,256],[:cbc, :cfb, :ctr, :ecb, :ofb]],
-        aria: [[128,192,256],[:cbc, :cfb, :ctr, :ecb, :gcm, :ofb]]
-      }
+      #{ 
+      #  aes: [[128, 256], [:cbc, :cfb, :ctr, :ofb, :gcm]], 
+      #  chacha20: [[256],[:poly1305]], 
+      #  blowfish: [[128],[:ecb, :cbc, :cfb, :ofb]],
+      #  camellia: [[128,192,256],[:ecb, :cbc, :cfb, :ofb, :ctr]],
+      #  aria: [[128,192,256],[:ecb, :cbc, :cfb, :ofb, :ctr, :gcm]]
+      #}
+      { 
+        aes: { keysize: [128, 192, 256], mode: [:cbc, :cfb, :ctr, :ofb, :gcm] }, 
+        chacha20: { keysize: [256], mode: [:poly1305] }, 
+        blowfish: { keysize: [128], mode: [:ecb, :cbc, :cfb, :ofb] },
+        camellia: { keysize: [128, 192, 256], mode: [:ecb, :cbc, :cfb, :ofb, :ctr] },
+        aria: { keysize: [128, 192, 256], mode: [:ecb, :cbc, :cfb, :ofb, :ctr, :gcm] }
+      }.freeze
+
     end
 
     def self.generate(keytype, keysize, *args, &block)

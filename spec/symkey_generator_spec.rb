@@ -126,7 +126,8 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
 
     subject.supported_symkey.each do |k,v|
 
-      v[0].each do |ks|
+      v[:keysize].each do |ks|
+      #v[0].each do |ks|
 
         puts "Generating Key #{k}-#{ks}"
 

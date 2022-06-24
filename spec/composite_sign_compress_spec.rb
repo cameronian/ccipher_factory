@@ -7,8 +7,9 @@ RSpec.describe CcipherFactory::CompositeCipher do
     data = File.read(__FILE__)
 
     CcipherFactory::SymKeyGenerator.supported_symkey.each do |k,v|
-    
-      v[0].each do |ks|
+   
+      v[:keysize].each do |ks|
+      #v[0].each do |ks|
 
         puts "Composite 1 with symkey #{k} or #{ks}"
         sk = CcipherFactory::SymKeyGenerator.generate(k, ks)
@@ -50,7 +51,8 @@ RSpec.describe CcipherFactory::CompositeCipher do
 
     CcipherFactory::SymKeyGenerator.supported_symkey.each do |k,v|
 
-      v[0].each do |ks|
+      v[:keysize].each do |ks|
+      #v[0].each do |ks|
 
         puts "Composite 2 with symkey #{k} or #{ks}"
 
@@ -132,7 +134,7 @@ RSpec.describe CcipherFactory::CompositeCipher do
 
     CcipherFactory::SymKeyGenerator.supported_symkey.each do |k,v|
 
-      v[0].each do |ks|
+      v[:keysize].each do |ks|
 
         puts "Composite 3 with symkey #{k} or #{ks}"
         ssk = CcipherFactory::SymKeyGenerator.generate(k,ks)

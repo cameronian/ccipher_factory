@@ -27,6 +27,10 @@ module CcipherFactory
       kdf
     end
 
+    def self.supported_kdf_algo
+      [:scrypt, :hkdf, :pbkdf2].freeze
+    end
+
     def self.from_asn1(bin, &block)
       ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)

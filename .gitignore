@@ -13,3 +13,6 @@
 *.bin
 *.cer
 *.crt
+
+Gemfile.lock
+
