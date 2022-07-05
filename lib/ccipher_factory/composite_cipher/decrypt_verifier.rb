@@ -36,16 +36,11 @@ module CcipherFactory
 
           Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
-            #ts = Encoding::ASN1Decoder.from_asn1(meta)
             ts = BinStruct.instance.struct_from_bin(meta)
             ccBin = ts.cipher_config
             cc = BinStruct.instance.struct_from_bin(ccBin)
             scBin = ts.signer_config
             sc = BinStruct.instance.struct_from_bin(scBin)
-            #ccBin = ts.value(:cipher_config)
-            #cc = Encoding::ASN1Decoder.from_asn1(ccBin)
-            #scBin = ts.value(:signer_config)
-            #sc = Encoding::ASN1Decoder.from_asn1(scBin)
 
             case BTag.value_constant(cc.oid)
             when :symkey_cipher

@@ -25,11 +25,20 @@ module CcipherFactory
         @blocksize = 8 if is_empty?(@blocksize)
         @salt = SecureRandom.random_bytes(16) if is_empty?(@salt)
 
+        logger.debug "Cost : #{@cost}"
+        logger.debug "Parallel : #{@parallel}"
+        logger.debug "Blocksize : #{@blocksize}"
+        logger.debug "Salt : #{@salt.inspect}"
+        logger.debug "Digest Algo : #{@digestAlgo}"
+        logger.debug "Digest : #{@digest}"
+
         if @digest.nil?
+          logger.debug "Initializing digest with algo #{@digestAlgo}"
           @digestAlgo = Digest::SupportedDigest.instance.default_digest if is_empty?(@digestAlgo)
           @digest = Digest.instance
           @digest.digest_init(@digestAlgo)
         else
+          logger.debug "Setting digest algo value from digest #{@digest}"
           @digestAlgo = @digest.algo
         end
 

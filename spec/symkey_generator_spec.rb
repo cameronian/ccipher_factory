@@ -20,9 +20,9 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
     expect((sk.key.length*8) == sk.keysize).to be true
 
     skBin = sk.encoded
-    expect { ssymkey.from_asn1(skBin) }.to raise_exception(CcipherFactory::SymKey::SymKeyError)
+    expect { ssymkey.from_encoded(skBin) }.to raise_exception(CcipherFactory::SymKey::SymKeyError)
 
-    rsk = ssymkey.from_asn1(skBin) do |ops|
+    rsk = ssymkey.from_encoded(skBin) do |ops|
       case ops
       when :key
         sk.key
@@ -34,7 +34,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
 
     sk.attach_mode
     skBin2 = sk.encoded
-    rsk2 = ssymkey.from_asn1(skBin2)
+    rsk2 = ssymkey.from_encoded(skBin2)
     expect(rsk2.keytype == sk.keytype).to be true
     expect(rsk2.keysize == sk.keysize).to be true
     expect(rsk2.key).not_to be_empty
@@ -55,7 +55,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
 
     skBin = sk.encoded
     expect(skBin).not_to be_nil
-    rsk = dsymkey.from_asn1(skBin) do |ops|
+    rsk = dsymkey.from_encoded(skBin) do |ops|
       case ops
       when :password
         "p@ssw0rd"
@@ -68,7 +68,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
     expect(rsk.keysize == sk.keysize).to be true
     expect(rsk.key == sk.key).to be true
 
-    irsk = dsymkey.from_asn1(skBin) do |ops|
+    irsk = dsymkey.from_encoded(skBin) do |ops|
       case ops
       when :password
         "p@ssw0rdasdf"
@@ -95,7 +95,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
 
     skBin = sk.encoded
     expect(skBin).not_to be_nil
-    rsk = dsymkey.from_asn1(skBin) do |ops|
+    rsk = dsymkey.from_encoded(skBin) do |ops|
       case ops
       when :password
         "p@ssw0rd"
@@ -109,7 +109,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
     expect(rsk.key == sk.key).to be true
 
     expect {
-      dsymkey.from_asn1(skBin) do |ops|
+      dsymkey.from_encoded(skBin) do |ops|
         case ops
         when :pre_verify_password   # need user specifically turned on unsafe behavior
           true
@@ -140,9 +140,9 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
         expect((sk.key.length*8) == sk.keysize).to be true
 
         skBin = sk.encoded
-        expect { ssymkey.from_asn1(skBin) }.to raise_exception(CcipherFactory::SymKey::SymKeyError)
+        expect { ssymkey.from_encoded(skBin) }.to raise_exception(CcipherFactory::SymKey::SymKeyError)
 
-        rsk = ssymkey.from_asn1(skBin) do |ops|
+        rsk = ssymkey.from_encoded(skBin) do |ops|
           case ops
           when :key
             sk.key
@@ -154,7 +154,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
 
         sk.attach_mode
         skBin2 = sk.encoded
-        rsk2 = ssymkey.from_asn1(skBin2)
+        rsk2 = ssymkey.from_encoded(skBin2)
         expect(rsk2.keytype == sk.keytype).to be true
         expect(rsk2.keysize == sk.keysize).to be true
         expect(rsk2.key).not_to be_empty

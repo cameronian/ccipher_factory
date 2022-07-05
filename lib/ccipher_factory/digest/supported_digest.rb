@@ -24,7 +24,6 @@ module CcipherFactory
         else
           raise DigestError, "Failed to set default digest" 
         end
-        #@default_digest = :sha256 if is_supported?(:sha256)
       end
 
       def is_supported?(algo)

@@ -25,8 +25,8 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     expect(encBuf.bytes.length > 0).to be true
 
-    rsk = CcipherFactory::SoftSymKey.from_asn1(skBin)
-    rskc = CcipherFactory::SymKey.from_asn1(skBin)
+    rsk = CcipherFactory::SoftSymKey.from_encoded(skBin)
+    rskc = CcipherFactory::SymKey.from_encoded(skBin)
     expect(comp.is_equals?(rsk.key, rskc.key)).to be true
     dc = subject.att_decryptor
     decBuf = MemBuf.new
@@ -64,7 +64,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
       f.write encBuf.bytes
     end
 
-    rsk = CcipherFactory::SoftSymKey.from_asn1(skBin)
+    rsk = CcipherFactory::SoftSymKey.from_encoded(skBin)
     dc = subject.att_decryptor
     decBuf = MemBuf.new
     dc.output(decBuf)
@@ -100,7 +100,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     expect(encBuf.bytes.length > 0).to be true
 
-    rsk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+    rsk = CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
       case ops
       when :password
         "p@ssw0rd"
@@ -118,7 +118,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     expect {
 
-      wrsk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+      wrsk = CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
         case ops
         when :password
           "password"
@@ -140,7 +140,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     skBin = sk.encoded
 
     expect {
-      CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+      CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
         case ops
         when :pre_verify_password
           true
@@ -177,7 +177,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     expect(encBuf.bytes.length > 0).to be true
 
-    rsk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+    rsk = CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
       case ops
       when :password
         "p@ssw0rd"
@@ -195,7 +195,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     expect {
       # compression error shall throw first before end of process
-      wrsk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+      wrsk = CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
         case ops
         when :password
           "wrong key"
@@ -217,7 +217,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     skBin = sk.encoded
 
     expect {
-      CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+      CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
         case ops
         when :pre_verify_password
           true

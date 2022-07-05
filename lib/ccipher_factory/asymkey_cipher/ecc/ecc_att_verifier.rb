@@ -41,7 +41,7 @@ module CcipherFactory
               smeta = ts.ecc_signature
               compression = ts.compression
 
-              decompressor_from_asn1(compression)
+              decompressor_from_encoded(compression)
               if is_compression_on?
                 logger.tdebug :ecc_att_ver, "Compression on"
               else

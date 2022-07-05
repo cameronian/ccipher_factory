@@ -17,7 +17,7 @@ module CcipherFactory
       dig
     end
 
-    def self.from_asn1(bin, &block)
+    def self.from_encoded(bin, &block)
       ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
     end
@@ -25,13 +25,13 @@ module CcipherFactory
     def self.from_tspec(ts, &block)
 
       if ts.oid == BTag.constant_value(:digest_attached)
-        dig = from_asn1(ts.digest_config)
+        dig = from_encoded(ts.digest_config)
         dig.digestVal = ts.digest_value
         dig
       else
 
         algo = BTag.value_constant(ts.digest_algo)
-        logger.debug "from_asn1 algo : #{algo}"
+        logger.debug "from_encoded algo : #{algo}"
         dig = instance
         dig.salt = ts.salt
         dig.digest_init(algo, dig.salt, &block)
@@ -45,7 +45,7 @@ module CcipherFactory
       res[:type] = BTag.value_constant(ts.oid)
 
       if res[:type] == :digest_attached
-        #conf = Encoding::ASN1Decoder.from_asn1(ts.value(:digest_config))
+        #conf = Encoding::ASN1Decoder.from_encoded(ts.value(:digest_config))
         conf = BinStruct.instance.struct_from_bin(ts.digest_config)
         res[:algo] = BTag.value_constant(conf.digest_algo)
         res[:salt] = conf.salt
@@ -115,13 +115,13 @@ module CcipherFactory
     end
 
     def digest_update(val)
-      raise DigestError, "Please call digest_init first before call update()" if @digest.nil?
+      raise DigestError, "Please call digest_init first before call update() (#{@digest.inspect})" if @digest.nil?
       @digest.digest_update(val) 
     end
 
     def digest_final
 
-      raise DigestError, "Please call digest_init first before call final()" if @digest.nil?
+      raise DigestError, "Please call digest_init first before call final() (#{@digest.inspect})" if @digest.nil?
 
       @digestVal = @digest.digest_final
       @digest = nil

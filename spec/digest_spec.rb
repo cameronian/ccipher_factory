@@ -32,14 +32,14 @@ RSpec.describe CcipherFactory::Digest do
       expect(digRes.bytes.length > 0).to be true
       expect(digRes.bytes == digRes2.bytes).to be true
 
-      rd = subject.from_asn1(meta)
+      rd = subject.from_encoded(meta)
       rdigRes = MemBuf.new
       rd.output(rdigRes)
       rd.digest_update(data)
       rmeta = rd.digest_final
       expect(rdigRes.bytes == digRes2.bytes).to be true
 
-      rd2 = subject.from_asn1(meta)
+      rd2 = subject.from_encoded(meta)
       rdigRes2 = MemBuf.new
       rd2.output(rdigRes2)
       rd2.digest_update("invalid data!")
@@ -66,7 +66,7 @@ RSpec.describe CcipherFactory::Digest do
       expect(digRes.bytes == digRes2.bytes).to be true
       expect(d.digestVal == d2.digestVal).to be true
 
-      rd = subject.from_asn1(meta)
+      rd = subject.from_encoded(meta)
       rd.digest_update(data)
       rmeta = rd.digest_final
       expect(rd.digestVal == d2.digestVal).to be true

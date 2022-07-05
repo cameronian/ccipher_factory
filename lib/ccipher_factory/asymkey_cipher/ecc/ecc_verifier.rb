@@ -26,7 +26,7 @@ module CcipherFactory
         sigInfo = ts.signer_info
         @sign = ts.signature
 
-        @digest = Digest.from_asn1(digInfo)
+        @digest = Digest.from_encoded(digInfo)
         @digest.output(intOutputBuf)
 
         @signer = KeyPair::ECCKeyPair.from_signer_info(sigInfo)

@@ -21,7 +21,6 @@ require_relative 'ccipher_factory/encoding/bin_struct'
 require_relative 'ccipher_factory/encoding/asn1'
 
 require_relative 'ccipher_factory/helpers/common'
-require_relative 'ccipher_factory/helpers/memory_buffer'
 
 require_relative 'ccipher_factory/digest/supported_digest'
 require_relative 'ccipher_factory/digest/digest'

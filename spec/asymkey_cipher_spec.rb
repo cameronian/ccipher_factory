@@ -87,7 +87,7 @@ RSpec.describe CcipherFactory::AsymKeyCipher do
       dec.decrypt_update_cipher(out.bytes)
       dec.decrypt_final
 
-      dig2 = CcipherFactory::Digest.from_asn1(digRes)
+      dig2 = CcipherFactory::Digest.from_encoded(digRes)
       dig2Out = MemBuf.new
       dig2.output(dig2Out)
       dig2.digest_update(dout.bytes)

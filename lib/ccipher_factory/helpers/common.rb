@@ -13,6 +13,10 @@ module CcipherFactory
       @output = output
     end
 
+    def output_obj
+      @output
+    end
+
     def write_to_output(val)
       @output.write(val) if not @output.nil? and not_empty?(val)
     end

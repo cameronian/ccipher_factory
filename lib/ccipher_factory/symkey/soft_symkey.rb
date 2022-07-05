@@ -7,7 +7,7 @@ module CcipherFactory
     include SymKey
     include Common
 
-    def self.from_asn1(bin, &block)
+    def self.from_encoded(bin, &block)
       ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
     end

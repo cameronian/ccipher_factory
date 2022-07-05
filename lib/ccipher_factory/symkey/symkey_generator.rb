@@ -54,7 +54,7 @@ module CcipherFactory
       raise SymKeyGeneratorError, "Password is not given to derive the symkey" if is_empty?(pass)
 
       dsk = DerivedSymKey.new(keytype, keysize) 
-      dsk.derive(pass, kdf)
+      dsk.derive(pass, kdf, &block)
       dsk
     end
 

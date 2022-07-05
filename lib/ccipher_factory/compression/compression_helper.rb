@@ -6,7 +6,7 @@ module CcipherFactory
 
     module CompressionHelper
 
-      def decompressor_from_asn1(bin)
+      def decompressor_from_encoded(bin)
 
         ts = BinStruct.instance.struct_from_bin(bin)
         case BTag.value_constant(ts.oid)

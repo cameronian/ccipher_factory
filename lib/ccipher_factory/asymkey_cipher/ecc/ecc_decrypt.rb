@@ -40,7 +40,7 @@ module CcipherFactory
         sender = Ccrypto::AlgoFactory.engine(Ccrypto::ECCPublicKey).to_key(senderPub)
         derived = @decryption_key.derive_dh_shared_secret(sender)
 
-        sessKey = DerivedSymKey.from_asn1(keyConf) do |ops|
+        sessKey = DerivedSymKey.from_encoded(keyConf) do |ops|
           case ops
           when :password
             derived

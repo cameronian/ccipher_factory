@@ -48,7 +48,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
           # external key
           skBin = sk.encoded
-          rsk = CcipherFactory::SoftSymKey.from_asn1(skBin) do |ops|
+          rsk = CcipherFactory::SoftSymKey.from_encoded(skBin) do |ops|
             case ops
             when :key
               sk.key
@@ -71,7 +71,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
           # attached mode for symkey
           sk.attach_mode
           skBin = sk.encoded
-          rsk2 = CcipherFactory::SoftSymKey.from_asn1(skBin)
+          rsk2 = CcipherFactory::SoftSymKey.from_encoded(skBin)
           expect(comp.is_equals?(rsk2.key,sk.key.key)).to be true
           #expect(rsk2.key == sk.key.key).to be true
           dec3 = subject.decryptor
@@ -183,7 +183,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     # external key
     skBin = sk.encoded
-    rsk = CcipherFactory::SoftSymKey.from_asn1(skBin) do |ops|
+    rsk = CcipherFactory::SoftSymKey.from_encoded(skBin) do |ops|
       case ops
       when :key
         key
@@ -205,7 +205,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     # attached mode
     sk.attach_mode
     skBin = sk.encoded
-    rsk2 = CcipherFactory::SoftSymKey.from_asn1(skBin)
+    rsk2 = CcipherFactory::SoftSymKey.from_encoded(skBin)
     comparator = Ccrypto::UtilFactory.instance(:comparator)
     expect(comparator.is_equal?(rsk2.key, sk.key)).to be true
     dec3 = subject.decryptor
@@ -240,7 +240,7 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     meta = c.encrypt_final
 
     skBin = sk.encoded
-    rsk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+    rsk = CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
       case ops
       when :password
         "p@ssw0rd"
@@ -258,10 +258,12 @@ RSpec.describe CcipherFactory::SymKeyCipher do
 
     expect(decBuf.equals?(data)).to be true
 
+    # activate password verifier to allow system
+    # verify given password before any cryptographic operations
     sk.activate_password_verifier
     skBin = sk.encoded
 
-    wdk = CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+    wdk = CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
       case ops
       when :password
         "password"
@@ -282,7 +284,9 @@ RSpec.describe CcipherFactory::SymKeyCipher do
     expect(decBuf.equals?(data)).to be false
 
     expect { 
-      CcipherFactory::DerivedSymKey.from_asn1(skBin) do |ops|
+      # verify password before crypto operation or else failure will only 
+      # be thrown during decrypt_final operation
+      CcipherFactory::DerivedSymKey.from_encoded(skBin) do |ops|
         case ops
         when :pre_verify_password
           true

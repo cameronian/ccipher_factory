@@ -32,16 +32,10 @@ module CcipherFactory
             Encoding.extract_meta(intOutputBuf) do |meta, bal|
 
               ts = BinStruct.instance.struct_from_bin(meta)
-              #ts = Encoding::ASN1Decoder.from_asn1(meta)
 
-              #vmeta = ts.value(:symkey_signature)
-              #compression = ts.value(:compression)
               vmeta = ts.symkey_signature
               compression = ts.compression
 
-              p compression
-
-              #cts = Encoding::ASN1Decoder.from_asn1(compression)
               cts = BinStruct.instance.struct_from_bin(compression)
               if cts.oid == BTag.constant_value(:compression_zlib)
                 compression_on

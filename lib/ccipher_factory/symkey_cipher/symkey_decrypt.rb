@@ -8,7 +8,7 @@ module CcipherFactory
       include Common
       include Compression::CompressionHelper
 
-      #class SymKeyDecryptError < StandardError; end
+      class SymKeyDecryptError < StandardError; end
 
       attr_accessor :key
 

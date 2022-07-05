@@ -24,7 +24,6 @@ module CcipherFactory
             Encoding.extract_meta(intOutputBuf) do |meta, bal|
               ts = BinStruct.instance.struct_from_bin(meta)
 
-              #ts = Encoding::ASN1Decoder.from_asn1(meta)
               case ts.oid
               when BTag.constant_value(:compression_zlib)
                 @decompressor = Ccrypto::UtilFactory.instance(:decompression)

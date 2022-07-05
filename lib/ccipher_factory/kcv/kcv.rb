@@ -11,7 +11,7 @@ module CcipherFactory
 
     attr_accessor :nonce, :check_value
 
-    def self.from_asn1(bin) 
+    def self.from_encoded(bin) 
 
       ts = BinStruct.instance.struct_from_bin(bin)
       kcv = KCV.new
@@ -37,16 +37,20 @@ module CcipherFactory
       res = intOutputBuf.bytes
       comp = Ccrypto::UtilFactory.instance(:comparator)
       comp.is_equal?(@check_value, res)
-      #@check_value == res
     end
 
-    def encoded
+    def encoded(&block)
 
       raise KCVError, "Key must be given" if is_empty?(@key)
 
       logger.debug "Generating KCV"
       compression_off
       output(intOutputBuf)
+
+      if block
+        logger.debug "Block given"
+        @iv = block.call(:kcv_cipher_iv)
+      end
 
       encrypt_init(@key)
 

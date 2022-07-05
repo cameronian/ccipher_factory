@@ -10,7 +10,7 @@ module CcipherFactory
 
     class KDFEngine; end
 
-    def KDF.instance(eng = :scrypt)
+    def KDF.instance(eng = :scrypt, &block)
       kdf = KDFEngine.new
 
       case eng
@@ -31,7 +31,7 @@ module CcipherFactory
       [:scrypt, :hkdf, :pbkdf2].freeze
     end
 
-    def self.from_asn1(bin, &block)
+    def self.from_encoded(bin, &block)
       ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
     end
@@ -46,7 +46,7 @@ module CcipherFactory
         kdf.blocksize = ts.blocksize
         kdf.salt = ts.salt
         kdf.outByteLength = ts.outByteLength
-        kdf.digest = Digest.from_asn1(ts.digest)
+        kdf.digest = Digest.from_encoded(ts.digest)
         kdf.derive_init
         kdf
       when :kdf_hkdf

@@ -16,7 +16,7 @@ RSpec.describe CcipherFactory::KCV do
 
     kcvBin = kcv.encoded
 
-    rkcv = subject.class.from_asn1(kcvBin)
+    rkcv = subject.class.from_encoded(kcvBin)
     rkcv.key = key
     expect(rkcv.is_matched?).to be true
 

@@ -36,7 +36,7 @@ RSpec.describe CcipherFactory::Compression::Compressor do
     c = CcipherFactory::Compression::Compressor.new
     c.decompress
 
-    dig2 = CcipherFactory::Digest.from_asn1(digMeta) 
+    dig2 = CcipherFactory::Digest.from_encoded(digMeta) 
     digOut2 = MemBuf.new
     dig2.output(digOut2)
 

@@ -31,17 +31,29 @@ module CcipherFactory
     ## 
     # Mixin methods
     ##
-    attr_accessor :keytype, :keysize, :key
+    
+    # Symmetric key type. Supported key type refers 
+    # CcipherFactory::SymKeyGenerator#supported_symkey
+    attr_accessor :keytype
+    
+    # Key length in bits
+    attr_accessor :keysize
+    
+    # Raw key. It could be bytes or key object
+    attr_accessor :key
+
     def initialize(keytype, keysize, key = nil)
       @keytype = keytype
       @keysize = keysize
       @key = key
     end
 
+    # split the raw key value into secret shares
     def split_key(totalShare, reqShare, &block)
       shamir_split(@key, totalShare, reqShare)
     end
 
+    # merge the splited share values into raw key value back
     def merge_key(shares)
       @key = shamir_recover(shares)
     end
@@ -51,13 +63,37 @@ module CcipherFactory
       GC.start
     end
 
+    def raw_key
+      if not @key.nil?
+        nativeHelper = Ccrypto::UtilFactory.instance(:native_helper)
+        if @key.is_a?(String) or nativeHelper.is_byte_array?(@key)
+          @key
+        elsif @key.respond_to?(:to_bin)
+          @key.to_bin
+        else
+          raise SymKeyError, "Not sure how to get raw_key for #{@key.inspect}"
+        end
+        #case @key
+        #when String, ::Java::byte[]
+        #  @key
+        #else
+        #  if @key.respond_to?(:to_bin)
+        #    @key.to_bin
+        #  else
+        #    raise SymKeyError, "Not sure how to get raw_key for #{@key.inspect}"
+        #  end
+        #end
+      else
+        raise SymKeyError, "Key instance is nil. Cannot get raw_key from nil instance"
+      end
+    end
+
     def is_equals?(key)
-      puts "called"
       comp = Ccrypto::UtilFactory.instance(:comparator)
       comp.is_equal?(@key, key)
     end
 
-    def self.from_asn1(bin, &block)
+    def self.from_encoded(bin, &block)
       raise SymKeyError, "Input should not be empty" if is_empty?(bin)
 
       ts = BinStruct.instance.struct_from_bin(bin)

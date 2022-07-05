@@ -144,7 +144,7 @@ module CcipherFactory
           logger.debug "AuthTag not relevent"
         end
 
-        logger.debug "encoding : #{ts.inspect}"
+        #logger.debug "encoding : #{ts.inspect}"
 
         ts.encoded
 

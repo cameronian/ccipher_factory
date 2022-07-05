@@ -7,7 +7,7 @@ module CcipherFactory
     include SymKey
     include Common
 
-    def self.from_asn1(bin, &block)
+    def self.from_encoded(bin, &block)
       ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
     end
@@ -22,7 +22,7 @@ module CcipherFactory
       keytype = BTag.value_constant(ts.keytype)
       keysize = ts.keysize
       dsk = DerivedSymKey.new(keytype, keysize) 
-      dsk.kdf = KDF.from_asn1(ts.kdf_config)
+      dsk.kdf = KDF.from_encoded(ts.kdf_config)
       dsk.derive(pass)
 
       kcvBin = ts.kcv
@@ -30,7 +30,7 @@ module CcipherFactory
       # default is NOT to generate the KCV flag to beat the recursive test 
       if block
         if not_empty?(kcvBin) and block.call(:pre_verify_password) == true
-          kcv = KCV.from_asn1(kcvBin)
+          kcv = KCV.from_encoded(kcvBin)
           kcv.key = dsk
           raise SymKeyError, "Given password is incorrect" if not kcv.is_matched?
         end
@@ -58,10 +58,21 @@ module CcipherFactory
       @passVer = false
     end
 
-    def derive(pass, eng = :scrypt)
+    def derive(pass, eng = :scrypt, &block)
 
       if is_empty?(@kdf)
         @kdf = KDF.instance(eng) 
+        if block
+          case eng
+          when :scrypt
+            @kdf.cost = block.call(:kdf_scrypt_cost)
+            @kdf.parallel = block.call(:kdf_scrypt_parallel)
+            @kdf.blocksize = block.call(:kdf_scrypt_blocksize)
+            @kdf.salt = block.call(:kdf_scrypt_salt)
+            @kdf.digestAlgo = block.call(:kdf_scrypt_digestAlgo)
+          end
+        end
+
         @kdf.derive_init(@keysize)
       end
 
@@ -86,7 +97,6 @@ module CcipherFactory
         ts.kcv = kcv.encoded
       else
         ts.kcv = ""
-        #ts.set(:kcv, "")
       end
       ts.encoded
 

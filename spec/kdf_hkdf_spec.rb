@@ -20,7 +20,7 @@ RSpec.describe CcipherFactory::KDF do
     expect(kdfOut.bytes).not_to be_nil
     expect(kdfOut.bytes.length == 64).to be true
 
-    rkdf = subject.from_asn1(meta)
+    rkdf = subject.from_encoded(meta)
     rout = MemBuf.new
     rkdf.output(rout)
     rkdf.derive_update(sk)
@@ -51,7 +51,7 @@ RSpec.describe CcipherFactory::KDF do
     expect(kdfOut.bytes).not_to be_nil
     expect(kdfOut.bytes.length == 64).to be true
 
-    rkdf = subject.from_asn1(meta)
+    rkdf = subject.from_encoded(meta)
     rout = MemBuf.new
     rkdf.output(rout)
     rkdf.derive_update(sk)
