@@ -2,8 +2,11 @@
 
 require_relative "ccipher_factory/version"
 
-require 'tlogger'
+#require 'tlogger'
+require 'teLogger'
 require 'toolrack'
+
+include TeLogger
 
 require 'ccrypto'
 require 'binenc'

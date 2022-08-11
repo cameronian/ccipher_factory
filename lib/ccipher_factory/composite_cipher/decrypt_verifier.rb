@@ -8,7 +8,9 @@ module CcipherFactory
     module DecryptVerifier
       include TR::CondUtils
       include Common
-      include TloggerHelper
+
+      include TeLogger::TeLogHelper
+      teLogger_tag :decVer
 
       attr_accessor :decryption_key, :verification_key
       def decrypt_verify_init(opts = {  }, &block)
