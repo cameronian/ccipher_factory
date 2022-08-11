@@ -5,12 +5,12 @@ require_relative "lib/ccipher_factory/version"
 Gem::Specification.new do |spec|
   spec.name          = "ccipher_factory"
   spec.version       = CcipherFactory::VERSION
-  spec.authors       = ["Chris"]
-  spec.email         = ["chrisliaw@antrapol.com"]
+  spec.authors       = ["Ian"]
+  spec.email         = ["cameronian0@protonmail.com"]
 
   spec.summary       = ""
   spec.description   = ""
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/cameronian/ccipher_factory"
   spec.required_ruby_version = ">= 2.4.0"
 
   #spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
@@ -30,9 +30,13 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  #spec.add_dependency 'tlogger'
-  #spec.add_dependency 'toolrack'
+  spec.add_dependency 'toolrack'
   spec.add_dependency 'teLogger'
+
+  spec.add_dependency 'ccrypto'
+  spec.add_dependency 'binenc'
+
+  spec.add_development_dependency 'devops_assist'
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
