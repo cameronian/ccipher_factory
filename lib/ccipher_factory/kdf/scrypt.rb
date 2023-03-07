@@ -14,6 +14,7 @@ module CcipherFactory
       ##
       attr_accessor :cost, :parallel, :blocksize, :salt, :outByteLength
       attr_accessor :digestAlgo, :digest
+      attr_accessor :attachedDigest, :attachedValue
       attr_reader :derivedVal
       def derive_init(*args, &block)
 
@@ -43,6 +44,12 @@ module CcipherFactory
         end
 
         @digest.output(intOutputBuf)
+
+        if is_empty?(@attachedValue)
+          @attachedDigest = false if is_empty?(@attachedDigest)
+        else
+          @attachedDigest = true
+        end
 
         if block
           instance_eval(&block)
@@ -85,8 +92,21 @@ module CcipherFactory
         ts.blocksize = @blocksize
         ts.parallel = @parallel
         ts.outByteLength = @outByteLength
+        if is_bool?(@attachedDigest) and @attachedDigest
+          ts.value = @derivedVal
+        else
+          ts.value = ""
+        end
         ts.encoded
 
+      end
+
+      def is_attached_mode?
+        if is_empty?(@attachedValue) 
+          @attachedDigest
+        else
+          true
+        end
       end
 
       private

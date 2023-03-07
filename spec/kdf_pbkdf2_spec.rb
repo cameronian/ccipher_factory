@@ -23,6 +23,7 @@ RSpec.describe CcipherFactory::KDF do
     expect(meta).not_to be_nil
     expect(kdfOut.bytes).not_to be_nil
     expect(kdfOut.bytes.length == 64).to be true
+    expect(kdf.is_attached_mode?).to be false
 
     rkdf = subject.from_encoded(meta)
     rout = MemBuf.new
@@ -32,8 +33,47 @@ RSpec.describe CcipherFactory::KDF do
 
     expect(rout.bytes).not_to be_empty
     expect(rout.bytes == kdfOut.bytes).to be true
+    expect(rkdf.is_attached_mode?).to be false
 
   end
+
+  it 'generates PBKDF2 derived attached output based on input' do
+
+    sk = SecureRandom.random_bytes(32)
+
+    kdf = subject.instance(:pbkdf2)
+
+    if TR::RTUtils.on_java?
+      # Java side not supported default digest SHA3_256
+      kdf.digestAlgo = :sha256
+    end
+
+    kdf.attachedDigest = true
+
+    kdfOut = MemBuf.new
+    kdf.output(kdfOut)
+    kdf.derive_init(512)
+    kdf.derive_update(sk)
+    meta = kdf.derive_final
+
+    expect(meta).not_to be_nil
+    expect(kdfOut.bytes).not_to be_nil
+    expect(kdfOut.bytes.length == 64).to be true
+    expect(kdf.is_attached_mode?).to be true
+
+    rkdf = subject.from_encoded(meta)
+    rout = MemBuf.new
+    rkdf.output(rout)
+    rkdf.derive_update(sk)
+    rkdf.derive_final
+
+    expect(rout.bytes).not_to be_empty
+    expect(rout.bytes == kdfOut.bytes).to be true
+    expect(rkdf.is_attached_mode?).to be true
+    expect(rkdf.attachedValue == rout.bytes).to be true
+
+  end
+
 
   it 'generates custom PBKDF2 derived output based on input' do
     

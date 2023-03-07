@@ -47,6 +47,7 @@ module CcipherFactory
         kdf.salt = ts.salt
         kdf.outByteLength = ts.outByteLength
         kdf.digest = Digest.from_encoded(ts.digest)
+        kdf.attachedValue = ts.value
         kdf.derive_init
         kdf
       when :kdf_hkdf
@@ -55,6 +56,7 @@ module CcipherFactory
         kdf.digestAlgo = BTag.value_constant(ts.digest)
         kdf.salt = ts.salt
         kdf.outByteLength = ts.outByteLength
+        kdf.attachedValue = ts.value
         kdf.derive_init
       when :kdf_pbkdf2
         kdf = KDFEngine.new
@@ -63,6 +65,7 @@ module CcipherFactory
         kdf.salt = ts.salt
         kdf.iter = ts.iterations
         kdf.outByteLength = ts.outByteLength
+        kdf.attachedValue = ts.value
         kdf.derive_init
       else
         raise KDFError, "Unknown KDF envelope ID '#{ts.oid}'"

@@ -103,6 +103,7 @@ module CcipherFactory
             int :digest
             int :outByteLength
             bin :salt
+            bin :value
           end,
 
           kdf_scrypt: Binenc::EngineFactory.instance(:bin_struct).define do
@@ -114,8 +115,8 @@ module CcipherFactory
             int :blocksize
             int :parallel
             int :outByteLength
+            bin :value
           end,
-
 
           kdf_pbkdf2: Binenc::EngineFactory.instance(:bin_struct).define do
             oid :oid, BTag.constant_value(:kdf_pbkdf2)
@@ -124,6 +125,7 @@ module CcipherFactory
             bin :salt
             int :iterations
             int :outByteLength
+            bin :value
           end,
 
 

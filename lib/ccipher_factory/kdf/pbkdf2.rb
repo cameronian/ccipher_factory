@@ -7,6 +7,8 @@ module CcipherFactory
       include Common
 
       attr_accessor :salt, :iter, :outByteLength, :digestAlgo
+      attr_accessor :attachedDigest, :attachedValue
+      attr_reader :derivedVal
 
       def derive_init(*args, &block)
 
@@ -14,6 +16,12 @@ module CcipherFactory
         @outByteLength = len/8 if not_empty?(len)
 
         @salt = SecureRandom.random_bytes(@outByteLength) if is_empty?(@salt)
+
+        if is_empty?(@attachedValue)
+          @attachedDigest = false if is_empty?(@attachedDigest)
+        else
+          @attachedDigest = true
+        end
 
         if block
           instance_eval(&block)
@@ -65,8 +73,21 @@ module CcipherFactory
         ts.salt = @salt
         ts.outByteLength = @outByteLength
         ts.iterations = hconf.iter
+        if is_bool?(@attachedDigest) and @attachedDigest
+          ts.value = @derivedVal
+        else
+          ts.value = ""
+        end
         ts.encoded
 
+      end
+
+      def is_attached_mode?
+        if is_empty?(@attachedValue) 
+          @attachedDigest
+        else
+          true
+        end
       end
 
       def logger
