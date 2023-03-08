@@ -152,6 +152,15 @@ module CcipherFactory
             int :keysize
             bin :key
           end,
+
+          symkey_keystore: Binenc::EngineFactory.instance(:bin_struct).define do
+            oid :oid, BTag.constant_value(:symkey_keystore)
+            int :version, 0x0100
+            bin :symkey_derived
+            bin :symkey_cipher
+            bin :symkey
+          end,
+
           
           symkey_att_sign: Binenc::EngineFactory.instance(:bin_struct).define do
             oid :oid, BTag.constant_value(:symkey_att_sign)

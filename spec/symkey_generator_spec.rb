@@ -20,6 +20,7 @@ RSpec.describe CcipherFactory::SymKeyGenerator do
     expect((sk.key.length*8) == sk.keysize).to be true
 
     skBin = sk.encoded
+    # negative test : no key given to load hence error
     expect { ssymkey.from_encoded(skBin) }.to raise_exception(CcipherFactory::SymKey::SymKeyError)
 
     rsk = ssymkey.from_encoded(skBin) do |ops|

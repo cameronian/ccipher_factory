@@ -2,3 +2,5 @@
 ccipher_factory:
 - :version: 0.1.0
   :timestamp: 1660211506.8015714
+- :version: 0.1.1
+  :timestamp: 1678183843.7795694

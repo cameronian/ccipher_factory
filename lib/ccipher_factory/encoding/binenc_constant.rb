@@ -27,6 +27,8 @@ if not defined?(BTag)
         define_constant(:symkey_att_sign, "#.22")
 
         define_constant(:kcv, "#.30")
+
+        define_constant(:symkey_keystore, "#.50")
       end
 
       define_constant(:compression, "#.40") do
@@ -44,6 +46,8 @@ if not defined?(BTag)
 
           define_constant(:ecc_att_sign, "#.12")
         end
+
+        define_constant(:asymkey_keystore, "#.50")
       end
 
       define_constant(:composite, "#.60") do
