@@ -88,6 +88,13 @@ module CcipherFactory
             bin :signer_info_value
           end,
 
+          asymkey_keystore: Binenc::EngineFactory.instance(:bin_struct).define do
+            oid :oid, BTag.constant_value(:asymkey_keystore)
+            int :version, 0x0100
+            bin :keystore
+          end,
+
+
           kcv: Binenc::EngineFactory.instance(:bin_struct).define do
             oid :oid, BTag.constant_value(:kcv)
             int :version, 0x0100
@@ -156,8 +163,7 @@ module CcipherFactory
           symkey_keystore: Binenc::EngineFactory.instance(:bin_struct).define do
             oid :oid, BTag.constant_value(:symkey_keystore)
             int :version, 0x0100
-            bin :symkey_derived
-            bin :symkey_cipher
+            bin :symkey_config
             bin :symkey
           end,
 

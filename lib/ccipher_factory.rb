@@ -46,6 +46,8 @@ module CcipherFactory
   class SymKeyCipherError < StandardError; end
   class SymKeyDecryptionError < StandardError; end
 
+  class KeystoreError < StandardError; end
+
 end
 
 MemBuf = Ccrypto::UtilFactory.instance(:membuf)

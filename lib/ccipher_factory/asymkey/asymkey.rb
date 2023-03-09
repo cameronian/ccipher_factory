@@ -6,7 +6,7 @@ module CcipherFactory
 
     class AsymKeyError < StandardError; end
 
-    attr_accessor :keypair
+    attr_reader :keypair
     def initialize(keypair = nil)
       @keypair = keypair
     end

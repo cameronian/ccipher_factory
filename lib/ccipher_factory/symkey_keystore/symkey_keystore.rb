@@ -5,7 +5,7 @@ module CcipherFactory
     include TR::CondUtils
     def self.from_encoded(bin, &block)
       
-      raise SymKeyCipherError, "Block is required" if not block
+      raise KeystoreError, "Block is required" if not block
 
       ts = BinStruct.instance.struct_from_bin(bin)
       from_tspec(ts, &block)
@@ -13,10 +13,10 @@ module CcipherFactory
 
     def self.from_tspec(ts, &block)
       
-      sk = CcipherFactory::SymKey.from_encoded(ts.symkey_derived) do |ops|
+      sk = CcipherFactory::SymKey.from_encoded(ts.symkey_config) do |ops|
         case ops
         when :password
-          block.call(:password)
+          block.call(:store_pass)
         end
       end
 
@@ -25,7 +25,7 @@ module CcipherFactory
       dec.output(decOut)
       dec.key = sk
       dec.att_decrypt_init
-      dec.att_decrypt_update(ts.symkey_cipher)
+      dec.att_decrypt_update(ts.symkey)
       dec.att_decrypt_final
 
       CcipherFactory::SymKey.from_encoded(decOut.bytes)
@@ -34,16 +34,16 @@ module CcipherFactory
 
     def to_keystore(key, &block)
      
-      raise SymKeyCipherError, "Key is required" if is_empty?(key)
-      raise SymKeyCipherError, "Block is required" if not block
+      raise KeystoreError, "Key is required" if is_empty?(key)
+      raise KeystoreError, "Block is required" if not block
 
       # 1. Derive session key from user password
       sk = CcipherFactory::SymKeyGenerator.derive(:aes, 256) do |ops|
         case ops
         when :password
-          pass = block.call(:password)
+          pass = block.call(:store_pass)
           if is_empty?(pass)
-            raise SymKeyCipherError, "Password is required" 
+            raise KeystoreError, "Password is required" 
           end
           pass
         end
@@ -64,9 +64,8 @@ module CcipherFactory
       enc.att_encrypt_final
 
       ts = BinStruct.instance.struct(:symkey_keystore)
-      ts.symkey_derived = sk.encoded
-      ts.symkey_cipher = encOut.bytes
-      ts.symkey = "testing"
+      ts.symkey_config = sk.encoded
+      ts.symkey = encOut.bytes
       ts.encoded
 
     end
